@@ -1,6 +1,5 @@
 import numpy as np
 from Note import Note
-from config import BPM
 class NoteBlock:
     """音块类"""
 
