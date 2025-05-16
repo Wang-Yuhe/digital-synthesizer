@@ -7,7 +7,7 @@ import scipy.signal as sg
 class Note:
     """音符类"""
     
-    def __init__(self,timbre:str, bpm:int, sample_rate:int, note_id, note_name, beat_time, volume):
+    def __init__(self,timbre:str, bpm:int, sample_rate:int, note_name, beat_time, volume, note_id):
         #修改初始化方式，note_name输入格式为:音名(C,C#...B)+数字(0~8)
         #in接口
         self.note_id = note_id
@@ -34,7 +34,7 @@ class Note:
                 
         raise ValueError("Invalid note format")
 
-    def generate_waveform(self):
+    def generate_waveform(self) -> np.ndarray:
         freq=self.note2freq(self.note_name)
         if self.timbre == "piano":
             t = np.linspace(0, self.duration, int(self.sample_rate * self.duration), endpoint=False)
@@ -52,6 +52,7 @@ class Note:
             #wavfile.write('generated_audio.wav', self.sample_rate, self.waveform.astype(np.float32))
             sd.play(self.waveform, samplerate=self.sample_rate)#在线播放
             sd.wait()
+        return self.waveform
 
     def show_time_and_freq_domain(self):
         t = np.linspace(0, self.duration, len(self.waveform), endpoint=False)
@@ -120,5 +121,5 @@ class Note:
         pass
 
 if __name__=="__main__":
-    note=Note("piano",60,44100,1,"E4",2,0.5)
+    note=Note("piano",60,44100,"E4",2,0.5,0)
     note.generate_waveform()
