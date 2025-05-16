@@ -9,8 +9,9 @@ class DigitalSynthesizer:
         self.bpm = 60
         self.current_playback_position = 0.0
         self.audio_engine = None
+        self.volume = 1
 
-    def add_track(self, timbre: str, pitch_range: str) -> Track:
+    def add_track(self, timbre: str, pitch_range: str, bpm: int, sample_rate:int, volume:int) -> Track:
         """添加音轨"""
         pass
         
