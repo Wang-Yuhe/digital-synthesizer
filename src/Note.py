@@ -1,5 +1,8 @@
 import numpy as np
 import scipy.io.wavfile as wavfile
+import sounddevice as sd
+import matplotlib.pyplot as plt
+import scipy.signal as sg
 
 class Note:
     """音符类"""
@@ -11,6 +14,7 @@ class Note:
         self.note_name = note_name
         self.beat_time = beat_time#节拍数
         self.volume = volume # 音量范围 0-1
+        self.timbre = timbre
 
         self.duration = beat_time/bpm*60
         self.sample_rate = sample_rate
@@ -32,10 +36,83 @@ class Note:
 
     def generate_waveform(self):
         freq=self.note2freq(self.note_name)
-        t = np.linspace(0, self.duration, int(self.sample_rate * self.duration), endpoint=False)
-        self.waveform = self.volume * np.sin(2 * np.pi * freq * t)
+        if self.timbre == "piano":
+            t = np.linspace(0, self.duration, int(self.sample_rate * self.duration), endpoint=False)
+            
+            #增加谐波成分(决定音色)，基波+若干谐波(振幅递减，频率整数倍)
+            harmonics = [1,0.340,0.102,0.085,0.070,0.065,0.028,0.010,0.014,0.012,0.013,0.004]
+            self.waveform = sum(self.volume * amplitude * np.sin(2 * np.pi * freq * (i + 1) * t)
+                   for i, amplitude in enumerate(harmonics))
+            self.waveform /= np.max(np.abs(self.waveform))
 
-        wavfile.write('generated_audio.wav', self.sample_rate, self.waveform.astype(np.float32))
+            #增加adsr包络，使振幅更自然
+            self.apply_adsr(self.duration*0.01,self.duration*0.03,0.4,self.duration*0.8)
+            #self.waveform=self.waveform*(t**0.01*np.exp(-3*t))
+
+            #wavfile.write('generated_audio.wav', self.sample_rate, self.waveform.astype(np.float32))
+            sd.play(self.waveform, samplerate=self.sample_rate)#在线播放
+            sd.wait()
+
+    def show_time_and_freq_domain(self):
+        t = np.linspace(0, self.duration, len(self.waveform), endpoint=False)
+
+        # -------- 时域图 --------
+        plt.figure(figsize=(12, 5))
+
+        plt.subplot(1, 2, 1)
+        plt.plot(t, self.waveform)
+        plt.title(f"Time Domain: {self.note_name} ({self.timbre})")
+        plt.xlabel("Time (s)")
+        plt.ylabel("Amplitude")
+        plt.grid(True)
+
+        # -------- 频域图 --------
+        N = len(self.waveform)
+        freq_domain = np.fft.fft(self.waveform)
+        freq = np.fft.fftfreq(N, d=1/self.sample_rate)
+
+        # 取正频率部分
+        half_N = N // 2
+        magnitude = np.abs(freq_domain[:half_N])
+        magnitude /= np.max(magnitude)  # 归一化
+        freq = freq[:half_N]
+
+        plt.subplot(1, 2, 2)
+        plt.plot(freq, magnitude)#转换成分贝
+        plt.title("Frequency Domain")
+        plt.xlabel("Frequency (Hz)")
+        plt.ylabel("Normalized Amplitude")
+        plt.grid(True)
+
+        plt.tight_layout()
+        plt.show()
+
+
+    def apply_adsr(self,attack_time=0.01, decay_time=0.1,sustain_level=0.8, release_time=0.2):
+        """增加adsr包络曲线"""
+        total_samples = len(self.waveform)
+        
+        attack_samples = int(self.sample_rate * attack_time)
+        decay_samples = int(self.sample_rate * decay_time)
+        release_samples = int(self.sample_rate * release_time)
+        sustain_samples = total_samples - (attack_samples + decay_samples + release_samples)
+        sustain_samples = max(sustain_samples, 0)
+        
+        # 各阶段的包络
+        attack_env = np.linspace(0, 1, attack_samples)
+        decay_env = np.linspace(1, sustain_level, decay_samples)
+        sustain_env = np.full(sustain_samples, sustain_level)#保持不变
+        release_env = np.linspace(sustain_level, 0, release_samples)
+        
+        envelope = np.concatenate([attack_env, decay_env, sustain_env, release_env])
+        
+        # 截断或填补以匹配 wave 长度
+        if len(envelope) > total_samples:
+            envelope = envelope[:total_samples]
+        else:
+            envelope = np.pad(envelope, (0, total_samples - len(envelope)))
+        
+        self.waveform*=envelope
 
 
     def generate_audio_data(self) -> np.ndarray:
@@ -43,5 +120,5 @@ class Note:
         pass
 
 if __name__=="__main__":
-    note=Note(1,"G",1,0.5)
+    note=Note("piano",60,44100,1,"E4",2,0.5)
     note.generate_waveform()
