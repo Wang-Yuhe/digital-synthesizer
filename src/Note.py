@@ -7,8 +7,8 @@ import scipy.signal as sg
 class Note:
     """音符类"""
     
-    def __init__(self,timbre:str, bpm:int, sample_rate:int, note_name, beat_time, volume, note_id):
-        #修改初始化方式，note_name输入格式为:音名(C,C#...B)+数字(0~8)
+    def __init__(self,timbre:str, bpm:int, sample_rate:int, note_name:str, beat_time, volume, note_id):
+        #修改初始化方式，note_name输入格式为:音名(C,C#,Db...B)+数字(0~8)/rest(休止符)
         #in接口
         self.note_id = note_id
         self.note_name = note_name
@@ -22,10 +22,34 @@ class Note:
         #out接口
         self.waveform = None  # ndarray
     
+    def note_midi(self):
+        if self.note_name.lower() == 'rest':
+            raise ValueError("Cannot compare rest note.")
+        note_map = {'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4, 'F': 5,
+            'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8, 'Ab': 8, 'A': 9, 'A#': 10, 'Bb': 10, 'B': 11}
+        for k in sorted(note_map.keys(), key=lambda x: -len(x)):
+            if self.note_name.startswith(k):
+                octave = int(self.note_name[len(k):])
+                return 12 * octave + note_map[k]
+        raise ValueError("Invalid note format")
+
+    def __lt__(self, other):
+        """
+        比较两个音高的大小(禁止与休止符比较)
+        """
+        return self.note_midi()<other.note_midi()
+
+    def __gt__(self, other):
+        return self.note_midi()>other.note_midi()
+
+    def __eq__(self, other):
+        return self.note_midi()==other.note_midi()
+
     def note2freq(self, note):#音符转频率,note格式为C4
         #C,C#,D,D#,E,F,F#,G,G#,A,A#,B
-        note_map = {'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5,
-                'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11}
+        if note=="rest": return 0
+        note_map = {'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4, 'F': 5,
+                'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8, 'Ab': 8, 'A': 9, 'A#': 10, 'Bb': 10, 'B': 11}
         for k in sorted(note_map.keys(), key=lambda x: -len(x)):
             if note.startswith(k):
                 octave = int(note[len(k):])
@@ -36,6 +60,9 @@ class Note:
 
     def generate_waveform(self) -> np.ndarray:
         freq=self.note2freq(self.note_name)
+        if freq==0:
+            self.waveform = np.zeros(int(self.sample_rate * self.duration))
+            return self.waveform
         if self.timbre == "piano":
             t = np.linspace(0, self.duration, int(self.sample_rate * self.duration), endpoint=False)
             
@@ -50,8 +77,8 @@ class Note:
             #self.waveform=self.waveform*(t**0.01*np.exp(-3*t))
 
             #wavfile.write('generated_audio.wav', self.sample_rate, self.waveform.astype(np.float32))
-            # sd.play(self.waveform, samplerate=self.sample_rate)#在线播放
-            # sd.wait()
+            #sd.play(self.waveform, samplerate=self.sample_rate)#在线播放
+            #sd.wait()
         return self.waveform
 
     def show_time_and_freq_domain(self):
@@ -121,5 +148,6 @@ class Note:
         pass
 
 if __name__=="__main__":
-    note=Note("piano",60,44100,"E4",2,0.5,0)
-    note.generate_waveform()
+    note1=Note("piano",60,44100,"rest",2,0.5,0)
+    #note2=Note("piano",60,44100,"Db4",2,0.5,0)
+    #note1.generate_waveform()
