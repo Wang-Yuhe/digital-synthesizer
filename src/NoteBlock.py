@@ -1,16 +1,18 @@
 import numpy as np
 from Note import Note
 import sounddevice as sd
+import matplotlib.pyplot as plt
 class NoteBlock:
     """音块类"""
 
     def __init__(self, timbre: str, bpm: int, sample_rate: int, note_names: list[str], 
-                 beat_times: list[float], volume: list[float], block_id: int):
+                 beat_times: list[float], volume: list[float], position_beat: int, block_id: int):
         # in接口
         self.block_id = block_id
         self.timbre = timbre
         self.bpm = bpm
         self.sample_rate = sample_rate
+        self.position_beat = position_beat#从一开始
         
         # 应用方法时需要修改的属性：
         self.note_names = []
@@ -23,13 +25,36 @@ class NoteBlock:
         
         # out接口
         self.waveform = None  # ndarray
-        
+    
+    def pad_waveforms(self, waveform_list):
+        """将所有数组补齐到相同长度，短的用0填充"""
+        max_len = max(len(wf) for wf in waveform_list)  # 找到最长长度
+        padded_waveforms = []
+        for wf in waveform_list:
+            padded = np.pad(wf, (0, max_len - len(wf)), mode='constant')
+            padded_waveforms.append(padded)
+        return padded_waveforms
+
     def generate_waveform(self) -> np.ndarray:
         """产生波形"""
-        notes_waveform = [note.generate_waveform() for note in self.notes]
+        notes_waveform = self.pad_waveforms([note.generate_waveform() for note in self.notes])
         self.waveform = sum(notes_waveform) if len(notes_waveform) > 1 else notes_waveform[0]
+        time_shifts = int((self.position_beat-1)/self.bpm*60 * self.sample_rate)
+        self.waveform = np.concatenate([np.zeros(time_shifts), self.waveform])
         return self.waveform
     
+    def show_time_domain(self):
+        t = np.linspace(0, (self.position_beat+max(self.beat_times)-1)/self.bpm*60, len(self.waveform), endpoint=False)
+        # -------- 时域图 --------
+        plt.figure(figsize=(12, 5))
+
+        plt.subplot(1, 2, 1)
+        plt.plot(t, self.waveform)
+        plt.xlabel("Time (s)")
+        plt.ylabel("Amplitude")
+        plt.grid(True)
+        plt.show()
+
     # 由于同一音块的音色、bpm和采样率相同，所以不需要传参
     def add_note(self, note_name: str, beat_time: float, volume: float) -> bool:
         """添加音符"""
@@ -57,7 +82,7 @@ class NoteBlock:
 
 if __name__ == "__main__":
     # 测试代码
-    note_block = NoteBlock("piano", 120, 44100, ["C4", "E4", "G4"], [1, 1, 1], [0.5, 0.5, 0.5], 0)
+    note_block = NoteBlock("piano", 120, 44100, ["C4", "E4", "G4"], [1, 2, 1], [0.5, 0.5, 0.5], 3, 0)
     note_block.remove_note(2)
     note_block.add_note("G4", 1, 0.5)
     note_block.generate_waveform()
