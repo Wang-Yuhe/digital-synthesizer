@@ -50,8 +50,8 @@ class Note:
             #self.waveform=self.waveform*(t**0.01*np.exp(-3*t))
 
             #wavfile.write('generated_audio.wav', self.sample_rate, self.waveform.astype(np.float32))
-            sd.play(self.waveform, samplerate=self.sample_rate)#在线播放
-            sd.wait()
+            # sd.play(self.waveform, samplerate=self.sample_rate)#在线播放
+            # sd.wait()
         return self.waveform
 
     def show_time_and_freq_domain(self):
