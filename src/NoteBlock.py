@@ -17,7 +17,6 @@ class NoteBlock:
         self.beat_times = []
         self.volume = []
         self.notes = []  # List[Note]
-        self.note_count = 0
         for i in range(len(note_names)):
             self.add_note(note_names[i], beat_times[i], volume[i])
         
@@ -33,9 +32,8 @@ class NoteBlock:
     # 由于同一音块的音色、bpm和采样率相同，所以不需要传参
     def add_note(self, note_name: str, beat_time: float, volume: float) -> bool:
         """添加音符"""
-        id = self.note_count
+        id = len(self.notes)
         note = Note(self.timbre, self.bpm, self.sample_rate, note_name, beat_time, volume, id)
-        self.note_count += 1
         self.note_names.append(note_name)
         self.beat_times.append(beat_time)
         self.volume.append(volume)
@@ -44,14 +42,13 @@ class NoteBlock:
 
     def remove_note(self, note_id: int) -> bool:
         """删除音符"""
-        if note_id < 0 or note_id >= self.note_count:
+        if note_id < 0 or note_id >= len(self.notes):
             return False
         del self.notes[note_id]
         del self.note_names[note_id]
         del self.beat_times[note_id]
         del self.volume[note_id]
-        self.note_count -= 1
-        for i in range(self.note_count):
+        for i in range(len(self.notes)):
             self.notes[i].note_id = i
         return True
 
