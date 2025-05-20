@@ -13,8 +13,8 @@ class Track:
         self.track_name = "Track"+str(track_id)
         self.pitch_range = pitch_range
         self.volume = volume # 音轨音量比重，音量范围 0-1
-        self.lowest_note = "C3" 
-        self.highest_note = "B5"
+        self.lowest_note = None
+        self.highest_note = None
 
         self.note_blocks = []  # List[NoteBlock]
 
@@ -32,6 +32,12 @@ class Track:
         """
         note_block = NoteBlock(self.timbre, self.bpm, self.sample_rate, note_names, beat_times, volume, block_id)
         self.note_blocks.insert(block_id, note_block)
+        for note in note_block.notes:
+            if note.note_name == "rest": continue
+            if self.lowest_note is None or note < self.lowest_note:
+                self.lowest_note = note
+            if self.highest_note is None or note > self.highest_note:
+                self.highest_note = note
         return True
         
     def remove_note_block(self, block_id: int) -> bool:
@@ -51,7 +57,11 @@ class Track:
         
     def calculate_pitch_range(self) -> str:
         """计算音高区间"""
-        pass
+        if self.lowest_note is None or self.highest_note is None:
+            self.pitch_range = "No notes in track"
+        else:
+            self.pitch_range = f"{self.lowest_note.note_name}-{self.highest_note.note_name}"
+        return self.pitch_range
         
     def change_timbre(self, target_timbre: str) -> bool:
         """改变音色"""
@@ -103,6 +113,7 @@ def play_little_star():
     track.add_note_block(["D4"], [1], [0.5], 40)
     track.add_note_block(["C4"], [2], [0.5], 41)
     track.generate_waveform()
+    print(track.calculate_pitch_range())
     sd.play(track.waveform, samplerate=track.sample_rate)
     sd.wait()
 if __name__ == "__main__":
