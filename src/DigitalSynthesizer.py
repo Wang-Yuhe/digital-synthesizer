@@ -75,12 +75,12 @@ def play_instance():
     # 旋律音轨
     melody = Track()
     melody.add_note_block(["D5", "G4", "A4", "B4", "C5"], [1, 0.5, 0.5, 0.5, 0.5], start_beat=[0, 1, 1.5, 2, 2.5])
-    melody.add_note_block(["D5", "G4", "G4"], [0.5, 0.5, 0.5], start_beat=[0.25, 1, 2])
+    melody.add_note_block(["D5", "G4", "G4"], [0.25, 0.25, 0.25], start_beat=[0, 1, 2])
     
 
     accompaniment = Track()
     accompaniment.add_note_block(["G3", "B3", "D4", "A3"], [2, 2, 2, 1], start_beat=[0, 0, 0, 2])
-    accompaniment.add_note_block(["B3"], [3], start_beat=[0.5])
+    accompaniment.add_note_block(["B3"], [3], start_beat=[0])
 
 
     synthesizer.add_track(melody)
