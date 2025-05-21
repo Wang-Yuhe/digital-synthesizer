@@ -71,10 +71,8 @@ class Track:
 
     def generate_waveform(self) -> np.ndarray:
         """生成音频数据"""
-        #self.waveform = [note_block.generate_waveform() for note_block in self.note_blocks]
-        notes_waveform = self.pad_waveforms([note_block.generate_waveform() for note_block in self.note_blocks])
-        self.waveform = sum(notes_waveform) if len(notes_waveform) > 1 else notes_waveform[0]
-        self.waveform = self.waveform * self.volume
+        self.waveform = [note_block.generate_waveform() for note_block in self.note_blocks]
+        self.waveform = np.concatenate(self.waveform) * self.volume
         return self.waveform
         
     def calculate_pitch_range(self) -> str:
