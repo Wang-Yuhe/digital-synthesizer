@@ -7,7 +7,8 @@ import scipy.signal as sg
 class Note:
     """音符类"""
     
-    def __init__(self,timbre:str, bpm:int, sample_rate:int, note_name:str, beat_time, volume, note_id):
+    def __init__(self, timbre: str = "piano", bpm: int = 120, sample_rate: int = 44100, 
+                 note_name: str = "C4", beat_time: float = 1.0, volume: float = 1.0, note_id: int = 0):
         #修改初始化方式，note_name输入格式为:音名(C,C#,Db...B)+数字(0~8)/rest(休止符)
         #in接口
         self.note_id = note_id
