@@ -36,7 +36,7 @@ class NoteBlock:
             if self.start_beat[note.note_id] > 0:
                 note.generate_waveform()
                 # 在音符开始前添加休止符
-                silence = np.zeros(int(self.start_beat[note.note_id] * self.sample_rate))
+                silence = np.zeros(int(self.start_beat[note.note_id] / self.bpm * 60 * self.sample_rate))
                 note.waveform = np.concatenate((silence, note.waveform))
                 max_len = max(max_len, len(note.waveform))
             else: 
@@ -87,7 +87,6 @@ if __name__ == "__main__":
 
     note_block.generate_waveform()
 
-    """
     # for note in note_block.notes:
     #     plt.plot(range(len(note.waveform)), note.waveform)
     plt.subplot(3, 1, 1)
@@ -102,7 +101,6 @@ if __name__ == "__main__":
     plt.ylabel("Amplitude")
     plt.grid(True)
     plt.show()
-    """
 
     sd.play(note_block.waveform, samplerate=note_block.sample_rate)
     sd.wait()
