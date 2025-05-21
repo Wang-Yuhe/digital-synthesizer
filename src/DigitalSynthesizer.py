@@ -5,7 +5,7 @@ import sounddevice as sd
 class DigitalSynthesizer:
     """数字音乐合成器主控类"""
     
-    def __init__(self):
+    def __init__(self, bpm: int = 120, sample_rate: int = 44100, volume: float = 1.0):
         self.tracks = []  # List[Track]
         self.waveform = None  # ndarray
         self.bpm = 60
@@ -68,13 +68,19 @@ class DigitalSynthesizer:
 
 def play_instance():
     """播放实例"""
-    synthesizer = DigitalSynthesizer()
+    synthesizer = DigitalSynthesizer(volume=0.5)
 
     # 伴奏与旋律均用Track类，节拍、音量明确，block_id从0开始
 
     # 旋律音轨
-    melody = Track("piano", "A4-C6", 120, 44100, 0.7, 0)
-    melody.add_note_block(["C4"], [1], [], 0)
+    melody = Track()
+    melody.add_note_block(["D5", "G4", "A4", "B4", "C5"], [1, 0.5, 0.5, 0.5, 0.5], start_beat=[0, 1, 1.5, 2, 2.5])
+    melody.add_note_block(["D5", "G4", "G4"], [0.5, 0.5, 0.5], start_beat=[0.25, 1, 2])
+    
+
+    accompaniment = Track()
+    accompaniment.add_note_block(["G3", "B3", "D4", "A3"], [2, 2, 2, 1], start_beat=[0, 0, 0, 2])
+    accompaniment.add_note_block(["B3"], [3], start_beat=[0.5])
 
 
     synthesizer.add_track(melody)
