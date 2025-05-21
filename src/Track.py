@@ -22,20 +22,26 @@ class Track:
         #out接口
         self.waveform = None 
         
-    def add_note_block(self, note_names: list[str], beat_times: list[float], volume: list[float] = [], block_id: int = -1) -> bool:
+    def add_note_block(self, note_names: list[str], beat_times: list[float], volume: list[float] = [], 
+                       start_beat: list[float] = [], block_id: int = -1) -> bool:
         """
         添加音块
 
         :param note_names: List[str]，音块中的包含音符的音名
         :param beat_times: List[int]，每个音符的节拍数
         :param volume: 传给note_block需要计算好比重，传入绝对音量
+        :param start_beat: List[float]，每个音符的起始节拍
         :param block_id: 音块在音轨的位置(下标)
         """
         if block_id == -1:
             block_id = len(self.note_blocks)
         if len(volume) < len(note_names):
             volume += [1] * (len(note_names) - len(volume))
-        note_block = NoteBlock(self.timbre, self.bpm, self.sample_rate, note_names, beat_times, volume, block_id)
+        if len(start_beat) < len(note_names):
+            start_beat += [0] * (len(note_names) - len(start_beat))
+        note_block = NoteBlock(timbre=self.timbre, bpm=self.bpm, sample_rate=self.sample_rate, 
+                               note_names=note_names, beat_times=beat_times, start_beat=start_beat, 
+                               volume=volume, block_id=block_id)
         self.note_blocks.insert(block_id, note_block)
         for note in note_block.notes:
             if note.note_name == "rest": continue
@@ -75,48 +81,48 @@ class Track:
 def play_little_star():
     # 主旋律轨道 (保持不变)
     track = Track("piano", "C3-B5", 120, 44100, 0.5, 0)
-    track.add_note_block(["C4"], [1], [0.5], 0)
-    track.add_note_block(["C4"], [1], [0.5], 1)
-    track.add_note_block(["G4"], [1], [0.5], 2)
-    track.add_note_block(["G4"], [1], [0.5], 3)
-    track.add_note_block(["A4"], [1], [0.5], 4)
-    track.add_note_block(["A4"], [1], [0.5], 5)
-    track.add_note_block(["G4"], [2], [0.5], 6)
-    track.add_note_block(["F4"], [1], [0.5], 7)
-    track.add_note_block(["F4"], [1], [0.5], 8)
-    track.add_note_block(["E4"], [1], [0.5], 9)
-    track.add_note_block(["E4"], [1], [0.5], 10)
-    track.add_note_block(["D4"], [1], [0.5], 11)
-    track.add_note_block(["D4"], [1], [0.5], 12)
-    track.add_note_block(["C4"], [2], [0.5], 13)
-    track.add_note_block(["G4"], [1], [0.5], 14)
-    track.add_note_block(["G4"], [1], [0.5], 15)
-    track.add_note_block(["F4"], [1], [0.5], 16)
-    track.add_note_block(["F4"], [1], [0.5], 17)
-    track.add_note_block(["E4"], [1], [0.5], 18)
-    track.add_note_block(["E4"], [1], [0.5], 19)
-    track.add_note_block(["D4"], [2], [0.5], 20)
-    track.add_note_block(["G4"], [1], [0.5], 21)
-    track.add_note_block(["G4"], [1], [0.5], 22)
-    track.add_note_block(["F4"], [1], [0.5], 23)
-    track.add_note_block(["F4"], [1], [0.5], 24)
-    track.add_note_block(["E4"], [1], [0.5], 25)
-    track.add_note_block(["E4"], [1], [0.5], 26)
-    track.add_note_block(["D4"], [2], [0.5], 27)
-    track.add_note_block(["C4"], [1], [0.5], 28)
-    track.add_note_block(["C4"], [1], [0.5], 29)
-    track.add_note_block(["G4"], [1], [0.5], 30)
-    track.add_note_block(["G4"], [1], [0.5], 31)
-    track.add_note_block(["A4"], [1], [0.5], 32)
-    track.add_note_block(["A4"], [1], [0.5], 33)
-    track.add_note_block(["G4"], [2], [0.5], 34)
-    track.add_note_block(["F4"], [1], [0.5], 35)
-    track.add_note_block(["F4"], [1], [0.5], 36)
-    track.add_note_block(["E4"], [1], [0.5], 37)
-    track.add_note_block(["E4"], [1], [0.5], 38)
-    track.add_note_block(["D4"], [1], [0.5], 39)
-    track.add_note_block(["D4"], [1], [0.5], 40)
-    track.add_note_block(["C4"], [2], [0.5], 41)
+    track.add_note_block(["C4"], [1], [0.5])
+    track.add_note_block(["C4"], [1], [0.5])
+    track.add_note_block(["G4"], [1], [0.5])
+    track.add_note_block(["G4"], [1], [0.5])
+    track.add_note_block(["A4"], [1], [0.5])
+    track.add_note_block(["A4"], [1], [0.5])
+    track.add_note_block(["G4"], [2], [0.5])
+    track.add_note_block(["F4"], [1], [0.5])
+    track.add_note_block(["F4"], [1], [0.5])
+    track.add_note_block(["E4"], [1], [0.5])
+    track.add_note_block(["E4"], [1], [0.5])
+    track.add_note_block(["D4"], [1], [0.5])
+    track.add_note_block(["D4"], [1], [0.5])
+    track.add_note_block(["C4"], [2], [0.5])
+    track.add_note_block(["G4"], [1], [0.5])
+    track.add_note_block(["G4"], [1], [0.5])
+    track.add_note_block(["F4"], [1], [0.5])
+    track.add_note_block(["F4"], [1], [0.5])
+    track.add_note_block(["E4"], [1], [0.5])
+    track.add_note_block(["E4"], [1], [0.5])
+    track.add_note_block(["D4"], [2], [0.5])
+    track.add_note_block(["G4"], [1], [0.5])
+    track.add_note_block(["G4"], [1], [0.5])
+    track.add_note_block(["F4"], [1], [0.5])
+    track.add_note_block(["F4"], [1], [0.5])
+    track.add_note_block(["E4"], [1], [0.5])
+    track.add_note_block(["E4"], [1], [0.5])
+    track.add_note_block(["D4"], [2], [0.5])
+    track.add_note_block(["C4"], [1], [0.5])
+    track.add_note_block(["C4"], [1], [0.5])
+    track.add_note_block(["G4"], [1], [0.5])
+    track.add_note_block(["G4"], [1], [0.5])
+    track.add_note_block(["A4"], [1], [0.5])
+    track.add_note_block(["A4"], [1], [0.5])
+    track.add_note_block(["G4"], [2], [0.5])
+    track.add_note_block(["F4"], [1], [0.5])
+    track.add_note_block(["F4"], [1], [0.5])
+    track.add_note_block(["E4"], [1], [0.5])
+    track.add_note_block(["E4"], [1], [0.5])
+    track.add_note_block(["D4"], [1], [0.5])
+    track.add_note_block(["D4"], [1], [0.5])
+    track.add_note_block(["C4"], [2], [0.5])
     track.generate_waveform()
     print(track.calculate_pitch_range())
     sd.play(track.waveform, samplerate=track.sample_rate)
