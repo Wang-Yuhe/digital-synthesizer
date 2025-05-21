@@ -4,7 +4,8 @@ import sounddevice as sd
 class Track:
     """音轨类"""
     
-    def __init__(self, timbre: str, pitch_range: str, bpm: int, sample_rate:int, volume:float, track_id: int):
+    def __init__(self, timbre: str = "piano", pitch_range: str = "C3-B5", bpm: int = 120, 
+                 sample_rate:int = 44100, volume: float = 1, track_id: int = 0):
         #in接口
         self.bpm = bpm
         self.sample_rate = sample_rate
@@ -21,7 +22,7 @@ class Track:
         #out接口
         self.waveform = None 
         
-    def add_note_block(self, note_names: list[str], beat_times: list[float], volume: list[float], block_id: int) -> bool:
+    def add_note_block(self, note_names: list[str], beat_times: list[float], volume: list[float] = [], block_id: int = -1) -> bool:
         """
         添加音块
 
@@ -30,6 +31,10 @@ class Track:
         :param volume: 传给note_block需要计算好比重，传入绝对音量
         :param block_id: 音块在音轨的位置(下标)
         """
+        if block_id == -1:
+            block_id = len(self.note_blocks)
+        if len(volume) < len(note_names):
+            volume += [1] * (len(note_names) - len(volume))
         note_block = NoteBlock(self.timbre, self.bpm, self.sample_rate, note_names, beat_times, volume, block_id)
         self.note_blocks.insert(block_id, note_block)
         for note in note_block.notes:
