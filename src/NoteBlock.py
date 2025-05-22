@@ -13,7 +13,6 @@ class NoteBlock:
         self.timbre = timbre
         self.bpm = bpm
         self.sample_rate = sample_rate
-        #self.position_beat = position_beat#从一开始
         
         # 应用方法时需要修改的属性：
         self.note_names = []
@@ -28,15 +27,6 @@ class NoteBlock:
         
         # out接口
         self.waveform = None  # ndarray
-    
-    def pad_waveforms(self, waveform_list):
-        """将所有数组补齐到相同长度，短的用0填充"""
-        max_len = max(len(wf) for wf in waveform_list)  # 找到最长长度
-        padded_waveforms = []
-        for wf in waveform_list:
-            padded = np.pad(wf, (0, max_len - len(wf)), mode='constant')
-            padded_waveforms.append(padded)
-        return padded_waveforms
 
     def generate_waveform(self) -> np.ndarray:
         """产生波形"""
@@ -59,8 +49,6 @@ class NoteBlock:
                 note.waveform = np.concatenate((note.waveform, silence))
         notes_waveform = [note.waveform for note in self.notes]
         self.waveform = sum(notes_waveform) if len(notes_waveform) > 1 else notes_waveform[0]
-        #time_shifts = int((self.position_beat-1)/self.bpm*60 * self.sample_rate)
-        #self.waveform = np.concatenate([np.zeros(time_shifts), self.waveform])
         return self.waveform
     
     def show_time_domain(self):
