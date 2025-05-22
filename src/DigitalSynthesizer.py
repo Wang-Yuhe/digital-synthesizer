@@ -11,7 +11,7 @@ class DigitalSynthesizer:
         self.bpm = 60
         self.sample_rate = 44100
         self.audio_engine = None
-        self.volume = 1
+        self.volume = volume
 
     def add_track(self, timbre: str, pitch_range: str, bpm: int, sample_rate: int, volume: float) -> Track:
         """添加音轨"""
@@ -81,10 +81,15 @@ def play_instance():
     accompaniment = Track()
     accompaniment.add_note_block(["G3", "B3", "D4", "A3"], [2, 2, 2, 1], start_beat=[0, 0, 0, 2])
     accompaniment.add_note_block(["B3"], [3], start_beat=[0])
+    
+    melody1 = Track()
+    melody1.add_note_block(["E5","G4","A4","C5","E5","D5","G5","E5"],[0.5,0.25,0.25,0.5,0.5,0.5,0.5,0.5],start_beat=[0,0.5,0.75,1,1.5,2,2.5,3.5])
+    accompaniment1 = Track()
+    accompaniment1.add_note_block(["G3","F3"],[2,2],start_beat=[0,2])
 
 
-    synthesizer.add_track(melody)
-    synthesizer.add_track(accompaniment)
+    synthesizer.add_track(melody1)
+    synthesizer.add_track(accompaniment1)
     synthesizer.generate_waveform()
     synthesizer.play_for_preview()
 

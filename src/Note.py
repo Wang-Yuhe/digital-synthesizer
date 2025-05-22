@@ -4,6 +4,8 @@ import sounddevice as sd
 import matplotlib.pyplot as plt
 import scipy.signal as sg
 
+from timbre.piano import piano
+
 class Note:
     """音符类"""
     
@@ -65,21 +67,8 @@ class Note:
             self.waveform = np.zeros(int(self.sample_rate * self.duration))
             return self.waveform
         if self.timbre == "piano":
-            t = np.linspace(0, self.duration, int(self.sample_rate * self.duration), endpoint=False)
-            
-            #增加谐波成分(决定音色)，基波+若干谐波(振幅递减，频率整数倍)
             harmonics = [1,0.340,0.102,0.085,0.070,0.065,0.028,0.010,0.014,0.012,0.013,0.004]
-            self.waveform = sum(self.volume * amplitude * np.sin(2 * np.pi * freq * (i + 1) * t)
-                   for i, amplitude in enumerate(harmonics))
-            self.waveform /= np.max(np.abs(self.waveform))
-
-            #增加adsr包络，使振幅更自然
-            self.apply_adsr(self.duration*0.01,self.duration*0.03,0.4,self.duration*0.8)
-            #self.waveform=self.waveform*(t**0.01*np.exp(-3*t))
-
-            #wavfile.write('generated_audio.wav', self.sample_rate, self.waveform.astype(np.float32))
-            #sd.play(self.waveform, samplerate=self.sample_rate)#在线播放
-            #sd.wait()
+            self.waveform=piano(freq, self.duration, self.sample_rate, self.volume, harmonics)
         return self.waveform
 
     def show_time_and_freq_domain(self):
@@ -115,33 +104,6 @@ class Note:
 
         plt.tight_layout()
         plt.show()
-
-
-    def apply_adsr(self,attack_time=0.01, decay_time=0.1,sustain_level=0.8, release_time=0.2):
-        """增加adsr包络曲线"""
-        total_samples = len(self.waveform)
-        
-        attack_samples = int(self.sample_rate * attack_time)
-        decay_samples = int(self.sample_rate * decay_time)
-        release_samples = int(self.sample_rate * release_time)
-        sustain_samples = total_samples - (attack_samples + decay_samples + release_samples)
-        sustain_samples = max(sustain_samples, 0)
-        
-        # 各阶段的包络
-        attack_env = np.linspace(0, 1, attack_samples)
-        decay_env = np.linspace(1, sustain_level, decay_samples)
-        sustain_env = np.full(sustain_samples, sustain_level)#保持不变
-        release_env = np.linspace(sustain_level, 0, release_samples)
-        
-        envelope = np.concatenate([attack_env, decay_env, sustain_env, release_env])
-        
-        # 截断或填补以匹配 wave 长度
-        if len(envelope) > total_samples:
-            envelope = envelope[:total_samples]
-        else:
-            envelope = np.pad(envelope, (0, total_samples - len(envelope)))
-        
-        self.waveform*=envelope
 
 
     def generate_audio_data(self) -> np.ndarray:
