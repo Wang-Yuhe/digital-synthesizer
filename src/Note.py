@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import scipy.signal as sg
 
 from timbre.piano import piano
+from timbre.harp import harp
 
 class Note:
     """音符类"""
@@ -68,6 +69,8 @@ class Note:
             return self.waveform
         if self.timbre == "piano":
             self.waveform=piano(freq, self.duration, self.sample_rate, self.volume)
+        if self.timbre == "harp":
+            self.waveform=harp(freq, self.duration, self.sample_rate, self.volume)
         return self.waveform
 
     def show_time_and_freq_domain(self):
@@ -110,6 +113,7 @@ class Note:
         pass
 
 if __name__=="__main__":
-    note1=Note("piano",60,44100,"rest",2,0.5,0)
+    note1=Note("harp",60,44100,"C4",2,1,0)
     #note2=Note("piano",60,44100,"Db4",2,0.5,0)
     #note1.generate_waveform()
+    #note1.show_time_and_freq_domain()
