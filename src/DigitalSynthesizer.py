@@ -74,13 +74,16 @@ def play_instance():
 
     # 旋律音轨
     melody = Track()
-    melody.add_note_block(["D5", "G4", "A4", "B4", "C5"], [1, 0.5, 0.5, 0.5, 0.5], start_beat=[0, 1, 1.5, 2, 2.5])
-    melody.add_note_block(["D5", "G4", "G4"], [0.25, 0.25, 0.25], start_beat=[0, 1, 2])
-    
+    melody.add_note_block("C4,C4,D4,C4,F4,E4".split(","), [0.5, 0.5, 1, 1, 1, 2], start_beat=[0, 0.5, 1, 2, 3, 4])
+    melody.add_note_block("C4,C4,D4,C4,G4,F4".split(","), [0.5, 0.5, 1, 1, 1, 2], start_beat=[0, 0.5, 1, 2, 3, 4])
+    melody.add_note_block("C4,C4,C5,A4,F4,E4,D4".split(","), [0.5, 0.5, 1, 1, 1, 1, 1], start_beat=[0, 0.5, 1, 2, 3, 4, 5])
+    melody.add_note_block("Bb4,Bb4,A4,F4,G4,F4".split(","), [0.5, 0.5, 1, 1, 1, 2], start_beat=[0, 0.5, 1, 2, 3, 4])
 
     accompaniment = Track()
-    accompaniment.add_note_block(["G3", "B3", "D4", "A3"], [2, 2, 2, 1], start_beat=[0, 0, 0, 2])
-    accompaniment.add_note_block(["B3"], [3], start_beat=[0])
+    accompaniment.add_note_block("F2,C3,G2,E3".split(","),[2,2,2,2],start_beat=[1,1,4,4])
+    accompaniment.add_note_block("E2,C3,F2,C3".split(","),[2,2,2,2],start_beat=[1,1,4,4])
+    accompaniment.add_note_block("F2,C3,G2,D3".split(","),[2,2,2,2],start_beat=[1,1,4,4])
+    accompaniment.add_note_block("F2,A2,G2,C3,F2,C3".split(","),[2,2,1,1,1,1],start_beat=[1,1,3,3,4,4])
     
     melody1 = Track()
     melody1.add_note_block(["E4","F#4","G#4","G#4","F#4","E4","E4"],[1,0.5,0.5,0.5,0.5,0.5,0.5],start_beat=[0,1,1.5,2,2.5,3,3.5])
@@ -96,8 +99,8 @@ def play_instance():
     melody1.add_note_block(["E4","B4","E4","A4","G#4","F#4"],[0.5,0.5,0.5,0.5,0.5,1],start_beat=[0,0.5,1.5,2,2.5,3])
     accompaniment1.add_note_block(["B1","B2","B3","G#3","B1","B2","B3","G#3"],[2,2,1,1,1,1,1,1],start_beat=[0,0,1,1,2,2,3,3])
 
-    synthesizer.add_track(melody1)
-    synthesizer.add_track(accompaniment1)
+    synthesizer.add_track(melody)
+    synthesizer.add_track(accompaniment)
     synthesizer.generate_waveform()
     synthesizer.play_for_preview()
 
