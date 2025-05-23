@@ -67,8 +67,7 @@ class Note:
             self.waveform = np.zeros(int(self.sample_rate * self.duration))
             return self.waveform
         if self.timbre == "piano":
-            harmonics = [1,0.340,0.102,0.085,0.070,0.065,0.028,0.010,0.014,0.012,0.013,0.004]
-            self.waveform=piano(freq, self.duration, self.sample_rate, self.volume, harmonics)
+            self.waveform=piano(freq, self.duration, self.sample_rate, self.volume)
         return self.waveform
 
     def show_time_and_freq_domain(self):
