@@ -83,10 +83,18 @@ def play_instance():
     accompaniment.add_note_block(["B3"], [3], start_beat=[0])
     
     melody1 = Track()
-    melody1.add_note_block(["E5","G4","A4","C5","E5","D5","G5","E5"],[0.5,0.25,0.25,0.5,0.5,0.5,0.5,0.5],start_beat=[0,0.5,0.75,1,1.5,2,2.5,3.5])
+    melody1.add_note_block(["E4","F#4","G#4","G#4","F#4","E4","E4"],[1,0.5,0.5,0.5,0.5,0.5,0.5],start_beat=[0,1,1.5,2,2.5,3,3.5])
     accompaniment1 = Track()
-    accompaniment1.add_note_block(["G3","F3"],[2,2],start_beat=[0,2])
+    accompaniment1.add_note_block("A1,A2,E3,A3,A1,A2,E3,A3".split(","),[2,2,1,1,1,1,1,1],start_beat=[0,0,1,1,2,2,3,3])
 
+    melody1.add_note_block(["F#4","G#4","F#4","E4","E4","E4"],[1,1,0.5,0.5,0.5,0.5],start_beat=[0,1,2,2.5,3,3.5])
+    accompaniment1.add_note_block(["G#1","G#2","E3","G#3","G#1","G#2","E3","G#3"],[2,2,1,1,1,1,1,1],start_beat=[0,0,1,1,2,2,3,3])
+
+    melody1.add_note_block(["F#4","G#4","F#4","G#4"],[1,1,1,1],start_beat=[0,1,2,3])
+    accompaniment1.add_note_block(["C#1","C#2","E3","G#3","C#1","C#2","E3","G#3"],[2,2,1,1,1,1,1,1],start_beat=[0,0,1,1,2,2,3,3])
+
+    melody1.add_note_block(["E4","B4","E4","A4","G#4","F#4"],[0.5,0.5,0.5,0.5,0.5,1],start_beat=[0,0.5,1.5,2,2.5,3])
+    accompaniment1.add_note_block(["B1","B2","B3","G#3","B1","B2","B3","G#3"],[2,2,1,1,1,1,1,1],start_beat=[0,0,1,1,2,2,3,3])
 
     synthesizer.add_track(melody1)
     synthesizer.add_track(accompaniment1)
