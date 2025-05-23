@@ -105,11 +105,6 @@ class Note:
         plt.tight_layout()
         plt.show()
 
-
-    def generate_audio_data(self) -> np.ndarray:
-        """生成音频数据"""
-        pass
-
 if __name__=="__main__":
     note1=Note("piano",60,44100,"rest",2,0.5,0)
     #note2=Note("piano",60,44100,"Db4",2,0.5,0)
