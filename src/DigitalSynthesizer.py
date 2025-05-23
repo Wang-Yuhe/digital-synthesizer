@@ -13,7 +13,7 @@ class DigitalSynthesizer:
         self.audio_engine = None
         self.volume = volume
 
-    def add_track(self, timbre: str, pitch_range: str, bpm: int, sample_rate: int, volume: float) -> Track:
+    def add_track_by_property(self, timbre: str, pitch_range: str, bpm: int, sample_rate: int, volume: float) -> Track:
         """添加音轨"""
         track_id = len(self.tracks)
         track = Track(timbre, pitch_range, bpm, sample_rate, volume, track_id)
