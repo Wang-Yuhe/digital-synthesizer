@@ -23,13 +23,13 @@ def piano(freq, duration, sample_rate, volume):
     #增加谐波成分(决定音色)，基波+若干谐波(振幅递减，频率整数倍)
     waveform = sum(amplitude * np.sin(2 * np.pi * freq * (i + 1) * t)
             for i, amplitude in enumerate(harmonics))
-    waveform /= np.max(np.abs(waveform))
+    waveform /= np.max(np.abs(waveform)+1e-12)
     waveform *= volume
 
     #增加adsr包络，使振幅更自然
-    waveform=apply_adsr(waveform,sample_rate, duration*0.0147, duration*0.0325, 0.7, duration*0.810)
+    waveform=apply_adsr(waveform,sample_rate, duration*0.0147, duration*0.0325, 0.4, duration*0.810)
     #waveform=waveform*(t**0.01*np.exp(-3*t))
-    waveform=lowpass_filter(waveform, 4, 2300, sample_rate)
+    waveform=lowpass_filter(waveform, 4, 1500, sample_rate)
 
     #wavfile.write('generated_audio.wav', self.sample_rate, self.waveform.astype(np.float32))
     #sd.play(waveform, samplerate=sample_rate)#在线播放
