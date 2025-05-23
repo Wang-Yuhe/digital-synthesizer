@@ -20,6 +20,7 @@ def flute(freq, duration, sample_rate, volume):
         # 调制每个谐波的频率
         modulated_freq = freq * (n + 1) * vibrato
         waveform += amp * np.sin(2 * np.pi * modulated_freq * t)
+    waveform /= np.max(np.abs(waveform) + 1e-12)#防止失真
     waveform *= volume
 
     # 应用ADSR包络
