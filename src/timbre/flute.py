@@ -6,13 +6,13 @@ def flute(freq, duration, sample_rate, volume):
     
     # Vibrato 参数
     vibrato_rate = 5  # 颤音速率（Hz）
-    vibrato_depth = 0.0008  # 颤音深度（相对主频的百分比）
+    vibrato_depth = 0.00005  # 颤音深度（相对主频的百分比）
 
     # 添加 vibrato 到频率上（调频）
     vibrato = 1 + vibrato_depth * np.sin(2 * np.pi * vibrato_rate * t)
 
     # 谐波系数
-    harmonics = [1.0, 0.47, 0.25, 0.08, 0.03, 0.015, 0.008, 0.004]
+    harmonics = [1.0, 0.209, 0.903, 0.141, 0.188, 0.153, 0.044, 0.061, 0.01, 0.057, 0.02, 0.003, 0.006, 0.006, 0.004, 0.009]
     
     # 合成波形
     waveform = np.zeros_like(t)
