@@ -1,11 +1,8 @@
 import numpy as np
 from timbre.adsr import apply_adsr
+from timbre.filter import lowpass_filter,band_filter
 import sounddevice as sd#到时候可以删去
 from scipy.signal import butter, lfilter
-
-def lowpass_filter(waveform, N, wc, sample_rate):#wc截止频率,butter平稳的滤波器
-    b,a = butter(N, wc/(sample_rate*0.5))#scipy 的滤波器设计函数要求频率是相对于 奈奎斯特频率（Nyquist = sample_rate / 2）的比例
-    return lfilter(b, a, waveform)
 
 def lfo(freq, lfo_rate, lfo_depth, t):
     lfo = np.sin(2 * np.pi * lfo_rate * t)
@@ -18,18 +15,32 @@ def piano(freq, duration, sample_rate, volume):
     #waveform=timbre_synthesis(freq, duration, sample_rate, volume, harmonics, 0.01, 0.03, 0.4, 0.8)
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
     
-    freq=lfo(freq, 5, 0.007, t)
+    B=0.0004#金属弦的刚性
+    DETUNE=0.999
+    decays = np.linspace(2.5, 6.0, len(harmonics))#高次泛音衰减的更快,不同谐波衰减速度不同,独立包络
 
     #增加谐波成分(决定音色)，基波+若干谐波(振幅递减，频率整数倍)
-    waveform = sum(amplitude * np.sin(2 * np.pi * freq * (i + 1) * t)
-            for i, amplitude in enumerate(harmonics))
-    waveform /= np.max(np.abs(waveform)+1e-12)
-    waveform *= volume
+    waveform=np.zeros_like(t)
+    for i, amplitude in enumerate(harmonics):
+        amp_freq = freq*(i+1) * np.sqrt(1+B*(i+1)**2)#现实中的弦不会产生完美的谐波（非谐波性）
+        #amp_freq = lfo(freq*(i+1), 5*(i+1)/10, 0.007, t)
+        #amp_freq = freq*(i+1) * (1 + (np.random.rand()-0.5)*DETUNE*0.001)
+        waveform += amplitude*np.exp(-decays[i]*t) * np.sin(2*np.pi*amp_freq*t)
+
+    noise = np.random.randn(len(t))
+    attack_time = 0.02 
+    noise_decay = np.linspace(1,0, int(attack_time*sample_rate))
+    noise_decay = np.pad(noise_decay, (0, len(t)-len(noise_decay)), mode='constant')*0.2#白噪音包络线
+    waveform += noise * noise_decay*volume#增加敲键的白噪音
 
     #增加adsr包络，使振幅更自然
-    waveform=apply_adsr(waveform,sample_rate, duration*0.0147, duration*0.0325, 0.4, duration*0.810)
+    waveform=apply_adsr(waveform,sample_rate, 0.01, 0.2, 0.5, duration*0.2)
     #waveform=waveform*(t**0.01*np.exp(-3*t))
-    waveform=lowpass_filter(waveform, 4, 1500, sample_rate)
+
+    waveform=lowpass_filter(waveform,  4000, 4, sample_rate)#动态调整截止频率
+
+    waveform /= np.max(np.abs(waveform)+1e-12)
+    waveform *= volume
 
     #wavfile.write('generated_audio.wav', self.sample_rate, self.waveform.astype(np.float32))
     #sd.play(waveform, samplerate=sample_rate)#在线播放
