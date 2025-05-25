@@ -11,13 +11,18 @@ def lfo(freq, lfo_rate, lfo_depth, t):
     #return t + (lfo_depth / (2*np.pi*lfo_rate)) * (1-np.cos(2*np.pi*lfo_rate*t))#周期性时移
 
 def piano(freq, duration, sample_rate, volume):
-    harmonics = [1.0, 0.144, 0.107, 0.165, 0.059, 0.122, 0.136, 0.26, 0.245, 0.653, 0.02, 0.18, 0.064, 0.121, 0.014, 0.028]
-    #waveform=timbre_synthesis(freq, duration, sample_rate, volume, harmonics, 0.01, 0.03, 0.4, 0.8)
+    #harmonics = [1.0, 0.144, 0.107, 0.165, 0.059, 0.122, 0.136, 0.26, 0.245, 0.653, 0.02, 0.18, 0.064, 0.121, 0.014, 0.028]
+    #harmonics = [1.0, 0.629, 0.078, 0.089, 0.005, 0.159, 0.008, 0.011, 0.014, 0.004, 0.002, 0.001, 0.001, 0.001, 0.001]
+    harmonics = [1.0, 0.778, 0.019, 0.085, 0.023, 0.034, 0.065, 0.023, 0.031, 0.015, 0.009, 0.019, 0.053, 0.018, 0.052, 0.004]
+
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
     
     B=0.0004#金属弦的刚性
     DETUNE=0.999
-    decays = np.linspace(2.5, 6.0, len(harmonics))#高次泛音衰减的更快,不同谐波衰减速度不同,独立包络
+    #对谐波成分做分析发现，不同频率的谐波成分也是不同的
+    if freq<250: decays = np.linspace(1.2, 2.5, len(harmonics))#高次泛音衰减的更快,不同谐波衰减速度不同,独立包络
+    elif freq<2000: decays = np.linspace(2.5, 5.0, len(harmonics))
+    else: decays = np.linspace(4, 5.5, len(harmonics))
 
     #增加谐波成分(决定音色)，基波+若干谐波(振幅递减，频率整数倍)
     waveform=np.zeros_like(t)
