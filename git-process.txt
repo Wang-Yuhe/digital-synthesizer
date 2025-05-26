@@ -1,10 +1,35 @@
-基本流程：
+准备工作：
+1.参考网上教程配置好github的SSHkeys
+2.新建一个文件夹用来存放本地仓库，将终端的工作路径切换到这个文件夹
+3.git clone [...]克隆这个远程仓库到本地(记得选择SSH方式)
+4.cd [...]将工作路径切换到本地仓库
+5.可以使用git remote -v查看远程分支的别名，一般是origin
+6.接下来提交的工作都在本地仓库的工作路径下完成
+7.在本地仓库中添加.gitignore文件，在其中至少添加：
+---
+# 忽略 Python 缓存文件
+__pycache__/
+*.pyc
+
+# 忽略虚拟环境
+venv/
+
+# 忽略日志文件
+*.log
+---
+这一步是为了在push的时候避免将本地的非目标文件push到仓库中污染仓库。
+
+提交基本流程：（假设你已经提前完成了某些file的增删改等）
+0.git switch dev切换到本地开发分支
 1.git switch -c [branch_name]创建并跳转到一个新的分支(branch_name)（本地仓库）
 2.git add [file]添加一个文件(file)到该分支的暂存区（本地仓库）
 3.git commit [file] -m "Information about the change"将对文件(file)的修改提交到当前工作分支，并附加说明"Information about the change"（本地仓库）
-4.git switch main切换回main分支（本地仓库）
-5.git merge [branch_name]将branch_name分支合并到当前分支（本地仓库）
-6.git pull origin main同步远程仓库的main分支到本地仓库，保证main分支处于最新状态，避免下一步出现交叉修改等错误。
-7.git push origin main将本地仓库的main分支同步给远程仓库。
+4.git switch dev切换回dev分支（本地仓库）
+5.git pull origin dev同步远程仓库的dev分支到本地仓库，保证dev分支处于最新状态，避免下一步出现交叉修改等错误。
+6.git merge [branch_name]将branch_name分支合并到当前分支（本地仓库）
+7.git push origin dev将本地仓库的dev分支同步给远程仓库。
 8.git branch -d [branch_name]删除本地branch_name分支。
 
+参考：
+https://www.cainiaoplus.com/git/git-push.html
+https://liaoxuefeng.com/books/git/branch/feature/index.html
