@@ -8,8 +8,8 @@ class DigitalSynthesizer:
     def __init__(self, bpm: int = 120, sample_rate: int = 44100, volume: float = 1.0):
         self.tracks = []  # List[Track]
         self.waveform = None  # ndarray
-        self.bpm = 60
-        self.sample_rate = 44100
+        self.bpm = bpm
+        self.sample_rate = sample_rate
         self.audio_engine = None
         self.volume = volume
 
@@ -49,7 +49,8 @@ class DigitalSynthesizer:
         self.waveform = np.zeros(max_len)
         for track in self.tracks:
             if track.waveform is not None:
-                self.waveform[:len(track.waveform)] += track.waveform * track.volume
+                self.waveform[:len(track.waveform)] += track.waveform
+        self.waveform *= self.volume
         return self.waveform
 
 
@@ -73,13 +74,13 @@ def play_instance():
     # 伴奏与旋律均用Track类，节拍、音量明确，block_id从0开始
 
     # 旋律音轨
-    melody = Track()
+    melody = Track(timbre="harp")
     melody.add_note_block("C4,C4,D4,C4,F4,E4".split(","), [0.5, 0.5, 1, 1, 1, 2], start_beat=[0, 0.5, 1, 2, 3, 4])
     melody.add_note_block("C4,C4,D4,C4,G4,F4".split(","), [0.5, 0.5, 1, 1, 1, 2], start_beat=[0, 0.5, 1, 2, 3, 4])
     melody.add_note_block("C4,C4,C5,A4,F4,E4,D4".split(","), [0.5, 0.5, 1, 1, 1, 1, 1], start_beat=[0, 0.5, 1, 2, 3, 4, 5])
     melody.add_note_block("Bb4,Bb4,A4,F4,G4,F4".split(","), [0.5, 0.5, 1, 1, 1, 2], start_beat=[0, 0.5, 1, 2, 3, 4])
 
-    accompaniment = Track()
+    accompaniment = Track(timbre="harp")
     accompaniment.add_note_block("F2,C3,G2,E3".split(","),[2,2,2,2],start_beat=[1,1,4,4])
     accompaniment.add_note_block("E2,C3,F2,C3".split(","),[2,2,2,2],start_beat=[1,1,4,4])
     accompaniment.add_note_block("F2,C3,G2,D3".split(","),[2,2,2,2],start_beat=[1,1,4,4])

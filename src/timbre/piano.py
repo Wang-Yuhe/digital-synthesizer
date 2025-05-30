@@ -39,7 +39,7 @@ def piano(freq, duration, sample_rate, volume):
     waveform += noise * noise_decay*volume#增加敲键的白噪音
 
     #增加adsr包络，使振幅更自然
-    waveform=apply_adsr(waveform,sample_rate, 0.01, 0.2, 0.5, duration*0.2)
+    waveform=apply_adsr(waveform,sample_rate, 0.01, 0.2, 0.5, 0.2)
     #waveform=waveform*(t**0.01*np.exp(-3*t))
 
     waveform=lowpass_filter(waveform,  4000, 4, sample_rate)#动态调整截止频率
