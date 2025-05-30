@@ -33,7 +33,7 @@ def timbre_synthesis(freq, duration, sample_rate, volume, harmonics):
         waveform += amplitude*np.exp(-decays[i]*lfo_t) * np.sin(2*np.pi*amp_freq*lfo_t)
 
     #增加adsr包络，使振幅更自然
-    waveform=apply_adsr(waveform,sample_rate,duration*0.005,duration*0.05, 0.4, duration*0.9)
+    waveform=apply_adsr(waveform,sample_rate,0.005,0.05, 0.4, 0.7)
     #waveform=waveform*(t**0.01*np.exp(-3*t))
     waveform *= np.exp(-2 * lfo_t)#模拟空气阻力
 
