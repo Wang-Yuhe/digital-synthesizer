@@ -1,6 +1,7 @@
 import numpy as np
 from timbre.adsr import apply_adsr
 from timbre.filter import lowpass_filter,band_filter
+from timbre.oscillator import oscillator
 import sounddevice as sd#到时候可以删去
 from scipy.signal import butter, lfilter
 
@@ -20,9 +21,7 @@ def piano(freq, duration, sample_rate, volume):
     B=0.0004#金属弦的刚性
     DETUNE=0.999
     #对谐波成分做分析发现，不同频率的谐波成分也是不同的
-    if freq<250: decays = np.linspace(1.2, 2.5, len(harmonics))#高次泛音衰减的更快,不同谐波衰减速度不同,独立包络
-    elif freq<2000: decays = np.linspace(2.5, 5.0, len(harmonics))
-    else: decays = np.linspace(4, 5.5, len(harmonics))
+    decays = np.linspace(2.5, 5.0, len(harmonics))#高次泛音衰减的更快,不同谐波衰减速度不同,独立包络
 
     #增加谐波成分(决定音色)，基波+若干谐波(振幅递减，频率整数倍)
     waveform=np.zeros_like(t)
@@ -30,7 +29,8 @@ def piano(freq, duration, sample_rate, volume):
         amp_freq = freq*(i+1) * np.sqrt(1+B*(i+1)**2)#现实中的弦不会产生完美的谐波（非谐波性）
         #amp_freq = lfo(freq*(i+1), 5*(i+1)/10, 0.007, t)
         #amp_freq = freq*(i+1) * (1 + (np.random.rand()-0.5)*DETUNE*0.001)
-        waveform += amplitude*np.exp(-decays[i]*t) * np.sin(2*np.pi*amp_freq*t)
+        #waveform += amplitude*np.exp(-decays[i]*t) * np.sin(2*np.pi*amp_freq*t)
+        waveform += amplitude*np.exp(-decays[i]*t) * oscillator('sine', amp_freq, t)
 
     noise = np.random.randn(len(t))
     attack_time = 0.02 

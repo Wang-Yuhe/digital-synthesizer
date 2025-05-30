@@ -1,6 +1,7 @@
 import numpy as np
 from timbre.adsr import apply_adsr
 from timbre.filter import lowpass_filter
+from timbre.oscillator import oscillator
 import sounddevice as sd#到时候可以删去
 
 def harp(freq, duration, sample_rate, volume):
@@ -30,7 +31,8 @@ def timbre_synthesis(freq, duration, sample_rate, volume, harmonics):
         amp_freq = freq*(i+1) * np.sqrt(1+B*(i+1)**2)#现实中的弦不会产生完美的谐波（非谐波性）
         #amp_freq = lfo(freq*(i+1), 5*(i+1)/10, 0.007, t)
         #amp_freq = freq*(i+1) * (1 + (np.random.rand()-0.5)*DETUNE*0.001)
-        waveform += amplitude*np.exp(-decays[i]*lfo_t) * np.sin(2*np.pi*amp_freq*lfo_t)
+        #waveform += amplitude*np.exp(-decays[i]*lfo_t) * np.sin(2*np.pi*amp_freq*lfo_t)
+        waveform += amplitude*np.exp(-decays[i]*lfo_t) * oscillator('sine', amp_freq, lfo_t)
 
     #增加adsr包络，使振幅更自然
     waveform=apply_adsr(waveform,sample_rate,0.005,0.05, 0.4, 0.7)
