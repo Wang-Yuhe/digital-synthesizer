@@ -1,6 +1,7 @@
 import numpy as np
 import librosa
 import scipy.signal
+from pathlib import Path
 
 def timbre_analysis_dict(
     filename: str,
@@ -74,7 +75,8 @@ def timbre_analysis_dict(
     return grouped_names, grouped_results
 
 if __name__ == "__main__":
-    filename = "E:/test.wav"
+    base = Path(__file__).resolve().parent.parent
+    filename = base.parent / 'audio' / 'test.wav'
     notename, result = timbre_analysis_dict(filename)
     print(notename)
     """
