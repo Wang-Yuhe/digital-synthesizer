@@ -7,6 +7,7 @@ import scipy.signal as sg
 from timbre.piano import piano
 from timbre.harp import harp
 from timbre.flute import flute
+from timbre.piccolo import piccolo
 
 class Note:
     """音符类"""
@@ -74,6 +75,8 @@ class Note:
             self.waveform=harp(freq, self.duration, self.sample_rate, self.volume)
         elif self.timbre == "flute":
             self.waveform=flute(freq, self.duration, self.sample_rate, self.volume)
+        elif self.timbre == "piccolo":
+            self.waveform=piccolo(freq, self.duration, self.sample_rate, self.volume)
         return self.waveform
 
     def show_time_and_freq_domain(self):
@@ -111,7 +114,7 @@ class Note:
         plt.show()
 
 if __name__=="__main__":
-    note1=Note("flute",60,44100,"C4",2,1,0)
+    note1=Note("piano",60,44100,"C4",2,1,0)
     #note2=Note("piano",60,44100,"Db4",2,0.5,0)
     note1.generate_waveform()
-    #note1.show_time_and_freq_domain()
+    note1.show_time_and_freq_domain()

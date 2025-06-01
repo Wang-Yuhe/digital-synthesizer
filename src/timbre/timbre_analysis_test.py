@@ -74,7 +74,7 @@ def timbre_analysis_list(
 
 if __name__ == "__main__":
     base = Path(__file__).resolve().parent.parent
-    filename = base.parent / 'audio' / 'harp' / 'harpc5.wav'
+    filename = base.parent / 'audio' / 'piano' / 'test.wav'
     notename, result = timbre_analysis_list(filename)
     #print(notename)
     #"""

@@ -2,6 +2,7 @@ from Track import Track
 from AudioEngine import AudioEngine
 import numpy as np
 import sounddevice as sd
+import scipy.io.wavfile as wavfile
 class DigitalSynthesizer:
     """数字音乐合成器主控类"""
     
@@ -61,7 +62,7 @@ class DigitalSynthesizer:
         
     def save_to_file(self, filename: str) -> bool:
         """保存为文件"""
-        pass
+        wavfile.write(filename+'.wav', self.sample_rate, self.waveform.astype(np.float32))
         
     def open_file(self, filename: str) -> bool:
         """打开文件"""
@@ -74,13 +75,13 @@ def play_instance():
     # 伴奏与旋律均用Track类，节拍、音量明确，block_id从0开始
 
     # 旋律音轨
-    melody = Track(timbre="harp")
+    melody = Track(timbre="piano")
     melody.add_note_block("C4,C4,D4,C4,F4,E4".split(","), [0.5, 0.5, 1, 1, 1, 2], start_beat=[0, 0.5, 1, 2, 3, 4])
     melody.add_note_block("C4,C4,D4,C4,G4,F4".split(","), [0.5, 0.5, 1, 1, 1, 2], start_beat=[0, 0.5, 1, 2, 3, 4])
     melody.add_note_block("C4,C4,C5,A4,F4,E4,D4".split(","), [0.5, 0.5, 1, 1, 1, 1, 1], start_beat=[0, 0.5, 1, 2, 3, 4, 5])
     melody.add_note_block("Bb4,Bb4,A4,F4,G4,F4".split(","), [0.5, 0.5, 1, 1, 1, 2], start_beat=[0, 0.5, 1, 2, 3, 4])
 
-    accompaniment = Track(timbre="harp")
+    accompaniment = Track(timbre="piano")
     accompaniment.add_note_block("F2,C3,G2,E3".split(","),[2,2,2,2],start_beat=[1,1,4,4])
     accompaniment.add_note_block("E2,C3,F2,C3".split(","),[2,2,2,2],start_beat=[1,1,4,4])
     accompaniment.add_note_block("F2,C3,G2,D3".split(","),[2,2,2,2],start_beat=[1,1,4,4])
@@ -99,9 +100,9 @@ def play_instance():
 
     melody1.add_note_block(["E4","B4","E4","A4","G#4","F#4"],[0.5,0.5,0.5,0.5,0.5,1],start_beat=[0,0.5,1.5,2,2.5,3])
     accompaniment1.add_note_block(["B1","B2","B3","G#3","B1","B2","B3","G#3"],[2,2,1,1,1,1,1,1],start_beat=[0,0,1,1,2,2,3,3])
-
-    synthesizer.add_track(melody)
-    synthesizer.add_track(accompaniment)
+    
+    synthesizer.add_track(melody1)
+    synthesizer.add_track(accompaniment1)
     synthesizer.generate_waveform()
     synthesizer.play_for_preview()
 
