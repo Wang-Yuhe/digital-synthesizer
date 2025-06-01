@@ -24,10 +24,10 @@ def flute(freq, duration, sample_rate, volume):
     waveform *= volume
 
     # 应用ADSR包络
-    attack_time = duration * 0.2
-    decay_time = duration * 0.1
+    attack_time = 0.2
+    decay_time = 0.1
     sustain_level = 0.8
-    release_time = duration * 0.3
+    release_time = 0.3
     waveform = apply_adsr(waveform, sample_rate, attack_time, decay_time, sustain_level, release_time)
 
     return waveform

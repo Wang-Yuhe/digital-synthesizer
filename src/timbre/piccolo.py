@@ -23,10 +23,10 @@ def piccolo(freq, duration, sample_rate, volume):
     waveform *= volume
 
     # ADSR 包络
-    attack_time = duration * 0.05
-    decay_time = duration * 0.1
+    attack_time = 0.05
+    decay_time = 0.1
     sustain_level = 0.6
-    release_time = duration * 0.2
+    release_time = 0.2
     waveform = apply_adsr(waveform, sample_rate, attack_time, decay_time, sustain_level, release_time)
 
     waveform /= np.max(np.abs(waveform)+1e-12)

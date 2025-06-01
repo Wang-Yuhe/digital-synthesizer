@@ -8,6 +8,7 @@ from timbre.piano import piano
 from timbre.harp import harp
 from timbre.flute import flute
 from timbre.piccolo import piccolo
+from timbre.voice_w import voice_w
 
 class Note:
     """音符类"""
@@ -77,6 +78,8 @@ class Note:
             self.waveform=flute(freq, self.duration, self.sample_rate, self.volume)
         elif self.timbre == "piccolo":
             self.waveform=piccolo(freq, self.duration, self.sample_rate, self.volume)
+        elif self.timbre == "voice_w":
+            self.waveform=voice_w(freq, self.duration, self.sample_rate, self.volume)
         return self.waveform
 
     def show_time_and_freq_domain(self):
