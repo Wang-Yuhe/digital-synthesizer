@@ -1,17 +1,21 @@
+import time
+
 import numpy as np
 from Note import Note
 import sounddevice as sd
+
+
 class NoteBlock:
     """音块类"""
 
-    def __init__(self, timbre: str, bpm: int, sample_rate: int, note_names: list[str], 
+    def __init__(self, timbre: str, bpm: int, sample_rate: int, note_names: list[str],
                  beat_times: list[float], volume: list[float], block_id: int):
         # in接口
         self.block_id = block_id
         self.timbre = timbre
         self.bpm = bpm
         self.sample_rate = sample_rate
-        
+
         # 应用方法时需要修改的属性：
         self.note_names = []
         self.beat_times = []
@@ -20,16 +24,16 @@ class NoteBlock:
         self.note_count = 0
         for i in range(len(note_names)):
             self.add_note(note_names[i], beat_times[i], volume[i])
-        
+
         # out接口
         self.waveform = None  # ndarray
-        
+
     def generate_waveform(self) -> np.ndarray:
         """产生波形"""
         notes_waveform = [note.generate_waveform() for note in self.notes]
         self.waveform = sum(notes_waveform)
         return self.waveform
-    
+
     # 由于同一音块的音色、bpm和采样率相同，所以不需要传参
     def add_note(self, note_name: str, beat_time: float, volume: float) -> None:
         """添加音符"""
@@ -54,9 +58,25 @@ class NoteBlock:
             self.notes[i].note_id = i
         return True
 
+
 if __name__ == "__main__":
     # 测试代码
-    note_block = NoteBlock("piano", 120, 44100, ["C4", "E4", "G4"], [1, 1, 1], [0.5, 0.5, 0.5], 0)
+    note_block = NoteBlock("piano", 120, 44100, ["C4", "E4", "G4"], [2, 2, 2], [0.5, 0.5, 0.5], 0)
     note_block.generate_waveform()
     sd.play(note_block.waveform, samplerate=note_block.sample_rate)
-    sd.wait()
+    time.sleep(10)
+    note_block = NoteBlock("violin", 120, 44100, ["C4", "E4", "G4"], [2, 2, 2], [0.5, 0.5, 0.5], 0)
+    note_block.generate_waveform()
+    sd.play(note_block.waveform, samplerate=note_block.sample_rate)
+    time.sleep(10)
+    note_block = NoteBlock("viola", 120, 44100, ["C4", "E4", "G4"], [2, 2, 2], [0.5, 0.5, 0.5], 0)
+    note_block.generate_waveform()
+    sd.play(note_block.waveform, samplerate=note_block.sample_rate)
+    time.sleep(10)
+    note_block = NoteBlock("cello", 120, 44100, ["C4", "E4", "G4"], [2, 2, 2], [0.5, 0.5, 0.5], 0)
+    note_block.generate_waveform()
+    sd.play(note_block.waveform, samplerate=note_block.sample_rate)
+    time.sleep(10)
+    note_block = NoteBlock("double_bass", 120, 44100, ["C4", "E4", "G4"], [2, 2, 2], [0.5, 0.5, 0.5], 0)
+    note_block.generate_waveform()
+    sd.play(note_block.waveform, samplerate=note_block.sample_rate)
