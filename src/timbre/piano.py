@@ -21,7 +21,7 @@ def piano(freq, duration, sample_rate, volume):
     B=0.0004#金属弦的刚性
     DETUNE=0.999
     #对谐波成分做分析发现，不同频率的谐波成分也是不同的
-    decays = np.linspace(2.5, 5.0, len(harmonics))#高次泛音衰减的更快,不同谐波衰减速度不同,独立包络
+    decays = np.linspace(2.5, 5.0, len(harmonics)) / duration / 2#高次泛音衰减的更快,不同谐波衰减速度不同,独立包络
 
     #增加谐波成分(决定音色)，基波+若干谐波(振幅递减，频率整数倍)
     waveform=np.zeros_like(t)
