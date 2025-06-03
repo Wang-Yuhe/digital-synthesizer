@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import scipy.signal as sg
 
 from timbre.piano import piano
+from timbre.violin import violin
+from timbre.viola import viola
+from timbre.cello import cello
+from timbre.double_bass import double_bass
 from timbre.harp import harp
 from timbre.flute import flute
 from timbre.piccolo import piccolo
@@ -73,13 +77,21 @@ class Note:
         if self.timbre == "piano":
             self.waveform=piano(freq, self.duration, self.sample_rate, self.volume)
         elif self.timbre == "harp":
-            self.waveform=harp(freq, self.duration, self.sample_rate, self.volume)
+            self.waveform = harp(freq, self.duration, self.sample_rate, self.volume)
         elif self.timbre == "flute":
-            self.waveform=flute(freq, self.duration, self.sample_rate, self.volume)
+            self.waveform = flute(freq, self.duration, self.sample_rate, self.volume)
         elif self.timbre == "piccolo":
-            self.waveform=piccolo(freq, self.duration, self.sample_rate, self.volume)
+            self.waveform = piccolo(freq, self.duration, self.sample_rate, self.volume)
         elif self.timbre == "voice_w":
-            self.waveform=voice_w(freq, self.duration, self.sample_rate, self.volume)
+            self.waveform = voice_w(freq, self.duration, self.sample_rate, self.volume)
+        elif self.timbre == "violin":
+            self.waveform = violin(freq, self.duration, self.sample_rate, self.volume)
+        elif self.timbre == "viola":
+            self.waveform = viola(freq, self.duration, self.sample_rate, self.volume)
+        elif self.timbre == "cello":
+            self.waveform = cello(freq, self.duration, self.sample_rate, self.volume)
+        elif self.timbre == "double_bass":
+            self.waveform = double_bass(freq, self.duration, self.sample_rate, self.volume)
         return self.waveform
 
     def show_time_and_freq_domain(self):

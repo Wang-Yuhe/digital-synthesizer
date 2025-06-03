@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 class NoteBlock:
     """音块类"""
 
-    def __init__(self, timbre: str = "piano", bpm: int = 120, sample_rate: int = 44100, 
+    def __init__(self, timbre: str = "violin", bpm: int = 120, sample_rate: int = 44100,
                  note_names: list[str] = ["C4", "E4", "G4"], beat_times: list[float] = [1, 1, 1], 
                  start_beat: list[float] = [0, 0, 0], volume: list[float] = [1, 1, 1], block_id: int = 0):
         # in接口
@@ -90,7 +90,7 @@ class NoteBlock:
 
 if __name__ == "__main__":
     # 测试代码
-    note_block = NoteBlock(note_names=["C4", "E4", "G4"], beat_times=[3, 2, 1], volume=[0.5, 0.5, 0.5], start_beat=[0, 1, 2], block_id=0)
+    note_block = NoteBlock(timbre="piano",note_names=["C4", "E4", "G4"], beat_times=[3, 2, 1], volume=[0.5, 0.5, 0.5], start_beat=[0, 1, 2], block_id=0)
     note_block.remove_note(2)
     note_block.add_note("G4", 1, 0.5, 2)
     print(note_block.note_names)

@@ -36,27 +36,27 @@ def apply_adsr(waveform,sample_rate,attack_time=0.01, decay_time=0.1, sustain_le
 
     waveform *= envelope
 
-def cello(freq, duration, sample_rate, volume):
+def double_bass(freq, duration, sample_rate, volume):
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
 
-    # 调整谐波成分
-    harmonics = [1.0, 0.5, 0.3, 0.2]  # 增加高频成分以增加粗糙感
+    # 调整谐波成分，以接近低音提琴的音色
+    harmonics = [1.0, 0.3, 0.1]  # 减少高频成分，强调低频
     waveform = sum(volume * amplitude * np.sin(2 * np.pi * freq * (i + 1) * t)
                         for i, amplitude in enumerate(harmonics))
 
     # 增加低频噪声以增强低频特性
-    noise_amplitude = 0.25  # 适度增加噪声幅度
+    noise_amplitude = 0.3  # 增加噪声幅度以增强低频特性
     noise = np.random.normal(0, noise_amplitude, len(t))
 
     # 低通滤波器：使用简单的移动平均来增强低频噪声
-    window_size = 120  # 调整窗口大小以平衡低频和粗糙感
+    window_size = 150  # 增加窗口大小以增强低频特性
     low_pass_noise = np.convolve(noise, np.ones(window_size) / window_size, mode='same')
 
     waveform += low_pass_noise
 
     # 增加颤音效果以增加不稳定性
-    vibrato_depth = 0.04
-    vibrato_rate = 10
+    vibrato_depth = 0.03
+    vibrato_rate = 8
     vibrato = 1 + vibrato_depth * np.sin(2 * np.pi * vibrato_rate * t)
     waveform *= vibrato
 
@@ -64,13 +64,13 @@ def cello(freq, duration, sample_rate, volume):
     waveform /= np.max(np.abs(waveform))
 
     # 增加非线性失真以增加粗糙感
-    waveform = np.tanh(2.0 * waveform)
+    waveform = np.tanh(1.5 * waveform)  # 适度增加失真系数
 
-    # 应用ADSR包络
-    attack_time = duration * 0.05
-    decay_time = duration * 0.1
-    sustain_level = 0.6
-    release_time = duration * 0.85
-    apply_adsr(waveform,sample_rate,attack_time, decay_time, sustain_level, release_time)
+    # 应用ADSR包络，模仿低音提琴的发音特性
+    attack_time = duration * 0.1
+    decay_time = duration * 0.2
+    sustain_level = 0.5
+    release_time = duration * 0.7
+    apply_adsr(waveform,sample_rate, attack_time, decay_time, sustain_level, release_time)
 
     return rms_normalize(waveform)
