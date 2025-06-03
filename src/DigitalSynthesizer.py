@@ -3,6 +3,7 @@ from AudioEngine import AudioEngine
 import numpy as np
 import sounddevice as sd
 import scipy.io.wavfile as wavfile
+from panning import panning, dynamic_panning
 class DigitalSynthesizer:
     """数字音乐合成器主控类"""
     
@@ -104,6 +105,7 @@ def play_instance():
     synthesizer.add_track(melody1)
     synthesizer.add_track(accompaniment1)
     synthesizer.generate_waveform()
+    synthesizer.waveform = dynamic_panning(synthesizer.waveform)
     synthesizer.play_for_preview()
 
 if __name__ == "__main__":
