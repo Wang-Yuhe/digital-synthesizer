@@ -1,0 +1,12 @@
+# 忽略 Python 缓存文件
+__pycache__/
+*.pyc
+
+# 忽略 macOS 生成的系统文件
+.DS_Store
+
+# 忽略虚拟环境
+venv/
+
+# 忽略日志文件
+*.log
