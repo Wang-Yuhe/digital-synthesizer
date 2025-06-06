@@ -1,0 +1,63 @@
+[MASTER]
+# 加载额外插件，支持 Google-style docstring 参数检查
+load-plugins=pylint.extensions.docparams
+init-hook='import sys; sys.path.append("src")'
+
+# 忽略的目录和文件（可根据项目情况修改）
+ignore=tests
+ignore-patterns=^test_.*\.py$
+
+[MESSAGES CONTROL]
+# 禁用某些警告（可按需打开）
+disable=
+    # C0114,  # Missing module docstring
+    # C0115,  # Missing class docstring
+    # C0116,  # Missing function or method docstring
+    R0903,  # Too few public methods
+    R0913,  # Too many arguments in function
+    R0801,  # Duplicate code
+    R0902,
+    R0917,
+    C0103
+
+[FORMAT]
+# Google 推荐限制在 80-100 个字符，这里用 100 更实用
+max-line-length=100
+
+# 缩进空格数
+indent-string='    '
+
+[BASIC]
+# 命名规则：Google 风格推荐 snake_case
+variable-rgx=[a-z_][a-z0-9_]{2,30}$
+function-rgx=[a-z_][a-z0-9_]{2,30}$
+argument-rgx=[a-z_][a-z0-9_]{2,30}$
+attr-rgx=[a-z_][a-z0-9_]{2,30}$
+const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+class-rgx=[A-Z][a-zA-Z0-9]+$
+module-rgx=(([a-z_][a-z0-9_]*)|(__.*__))$
+
+# 允许的好函数名，如 i, j 等
+good-names=i,j,k,ex,Run,_
+
+[DESIGN]
+# 函数最大参数数量（Google 推荐不超过 4~5）
+max-args=10
+
+# 函数最大分支数
+max-branches=12
+
+# 函数最大嵌套层级
+max-nested-blocks=5
+
+[TYPECHECK]
+# 如果使用第三方库（如 NumPy、requests），可在这里添加 stub 路径
+ignored-modules=
+
+[REPORTS]
+# 不要生成冗长报告
+reports=no
+
+[LOGGING]
+# 检查日志格式
+logging-format-style=old

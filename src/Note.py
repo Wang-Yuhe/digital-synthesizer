@@ -1,8 +1,5 @@
 import numpy as np
-import scipy.io.wavfile as wavfile
-import sounddevice as sd
 import matplotlib.pyplot as plt
-import scipy.signal as sg
 
 from timbre.piano import piano
 from timbre.violin import violin
@@ -16,9 +13,10 @@ from timbre.voice_w import voice_w
 
 class Note:
     """音符类"""
-    
-    def __init__(self, timbre: str = "piano", bpm: int = 120, sample_rate: int = 44100, 
-                 note_name: str = "C4", beat_time: float = 1.0, volume: float = 1.0, note_id: int = 0):
+
+    def __init__(self, timbre: str = "piano", bpm: int = 120, sample_rate: int = 44100,
+                 note_name: str = "C4", beat_time: float = 1.0, volume: float = 1.0,
+                 note_id: int = 0):
         #修改初始化方式，note_name输入格式为:音名(C,C#,Db...B)+数字(0~8)/rest(休止符)
         #in接口
         self.note_id = note_id
@@ -32,7 +30,7 @@ class Note:
 
         #out接口
         self.waveform = None  # ndarray
-    
+
     def note_midi(self):
         if self.note_name.lower() == 'rest':
             raise ValueError("Cannot compare rest note.")
@@ -57,8 +55,9 @@ class Note:
         return self.note_midi()==other.note_midi()
 
     def note2freq(self, note):#音符转频率,note格式为C4
-        #C,C#,D,D#,E,F,F#,G,G#,A,A#,B
-        if note=="rest": return 0
+        # C,C#,D,D#,E,F,F#,G,G#,A,A#,B
+        if note=="rest":
+            return 0
         note_map = {'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4, 'F': 5,
                 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8, 'Ab': 8, 'A': 9, 'A#': 10, 'Bb': 10, 'B': 11}
         for k in sorted(note_map.keys(), key=lambda x: -len(x)):
@@ -66,7 +65,7 @@ class Note:
                 octave = int(note[len(k):])
                 midi_num = 12 * (octave + 1) + note_map[k]
                 return 440.0 * (2 ** ((midi_num - 69) / 12))
-                
+
         raise ValueError("Invalid note format")
 
     def generate_waveform(self) -> np.ndarray:
