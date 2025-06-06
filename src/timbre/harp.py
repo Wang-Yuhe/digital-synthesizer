@@ -10,7 +10,7 @@ def harp(freq, duration, sample_rate, volume):
     waveform=timbre_synthesis(freq, duration, sample_rate, volume, harmonics)
     return waveform
 
-def lfo(freq, lfo_rate, lfo_depth, t):
+def lfo(lfo_rate, lfo_depth, t):
     """低频振荡器"""
     # lfo = np.sin(2 * np.pi * lfo_rate * t)
     # freq = freq + lfo_depth*lfo
@@ -20,7 +20,7 @@ def lfo(freq, lfo_rate, lfo_depth, t):
 def timbre_synthesis(freq, duration, sample_rate, volume, harmonics):
     """根据不同的音高（时域频率）合成音色"""
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
-    lfo_t = lfo(freq, 5, 0.001, t)#lfo调制，模拟琴弦波动
+    lfo_t = lfo(5, 0.001, t)#lfo调制，模拟琴弦波动
     #freq = lfo(freq, 8, 0.01, t)
 
     B=0.001#弦的刚性
