@@ -21,8 +21,8 @@ disable=
     C0103
 
 [FORMAT]
-# Google 推荐限制在 80-100 个字符，这里用 100 更实用
-max-line-length=100
+# Google 推荐限制在 80-100 个字符，考虑到项目实际情况，设置为150
+max-line-length=150
 
 # 缩进空格数
 indent-string='    '

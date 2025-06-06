@@ -1,3 +1,4 @@
+"""音符类"""
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -32,6 +33,7 @@ class Note:
         self.waveform = None  # ndarray
 
     def note_midi(self):
+        """用以量化音符的音高方便比较"""
         if self.note_name.lower() == 'rest':
             raise ValueError("Cannot compare rest note.")
         note_map = {'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4, 'F': 5,
@@ -54,7 +56,8 @@ class Note:
     def __eq__(self, other):
         return self.note_midi()==other.note_midi()
 
-    def note2freq(self, note):#音符转频率,note格式为C4
+    def note2freq(self, note):
+        """音符转频率,note格式为C4"""
         # C,C#,D,D#,E,F,F#,G,G#,A,A#,B
         if note=="rest":
             return 0
@@ -69,6 +72,7 @@ class Note:
         raise ValueError("Invalid note format")
 
     def generate_waveform(self) -> np.ndarray:
+        """产生波形数据"""
         freq=self.note2freq(self.note_name)
         if freq==0:
             self.waveform = np.zeros(int(self.sample_rate * self.duration))
@@ -94,6 +98,7 @@ class Note:
         return self.waveform
 
     def show_time_and_freq_domain(self):
+        """绘制时域频域特性"""
         t = np.linspace(0, self.duration, len(self.waveform), endpoint=False)
 
         # -------- 时域图 --------

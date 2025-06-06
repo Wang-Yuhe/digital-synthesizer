@@ -1,3 +1,4 @@
+"""声像移动"""
 import numpy as np
 
 def panning(waveform: np.ndarray, pan: float) -> np.ndarray:
@@ -42,7 +43,7 @@ def panning(waveform: np.ndarray, pan: float) -> np.ndarray:
 def dynamic_panning(waveform: np.ndarray, start_pan: float = -1.0, end_pan: float = 1.0, chunk_size: int = 1024) -> np.ndarray:
     """
     对音频波形进行动态声像移动，从 start_pan 平滑过渡到 end_pan。
-    
+
     Args:
         waveform (np.ndarray): 输入音频，单声道 shape=(n,) 或立体声 shape=(n, 2)
         start_pan (float): 起始声像位置（-1 左，0 中，+1 右）
@@ -60,7 +61,7 @@ def dynamic_panning(waveform: np.ndarray, start_pan: float = -1.0, end_pan: floa
             waveform = waveform[:, 0]
         else:
             raise ValueError("Unsupported number of channels")
-    
+
     num_samples = waveform.shape[0]
     num_chunks = int(np.ceil(num_samples / chunk_size))
 
@@ -74,7 +75,7 @@ def dynamic_panning(waveform: np.ndarray, start_pan: float = -1.0, end_pan: floa
         start = i * chunk_size
         end = min(start + chunk_size, num_samples)
         chunk = waveform[start:end]
-        
+
         pan = pan_values[i]
         left_gain = (1.0 - pan) / 2.0
         right_gain = (1.0 + pan) / 2.0
@@ -83,4 +84,3 @@ def dynamic_panning(waveform: np.ndarray, start_pan: float = -1.0, end_pan: floa
         stereo_output[start:end, 1] = chunk * right_gain  # 右声道
 
     return stereo_output
-

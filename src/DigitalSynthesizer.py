@@ -1,12 +1,13 @@
-from Track import Track
-from AudioEngine import AudioEngine
+"""数字音乐合成器主控类"""
 import numpy as np
 import sounddevice as sd
-import scipy.io.wavfile as wavfile
-from panning import panning, dynamic_panning
+from scipy.io import wavfile
+
+from Track import Track
+from panning import dynamic_panning
 class DigitalSynthesizer:
     """数字音乐合成器主控类"""
-    
+
     def __init__(self, bpm: int = 120, sample_rate: int = 44100, volume: float = 1.0):
         self.tracks = []  # List[Track]
         self.waveform = None  # ndarray
@@ -15,33 +16,34 @@ class DigitalSynthesizer:
         self.audio_engine = None
         self.volume = volume
 
-    def add_track_by_property(self, timbre: str, pitch_range: str, bpm: int, sample_rate: int, volume: float) -> Track:
+    def add_track_by_property(self, timbre: str, pitch_range: str, bpm: int,
+                              sample_rate: int, volume: float) -> Track:
         """添加音轨"""
         track_id = len(self.tracks)
         track = Track(timbre, pitch_range, bpm, sample_rate, volume, track_id)
         self.tracks.append(track)
         return track
-    
+
     def add_track(self, track: Track) -> Track:
         """添加音轨"""
         track_id = len(self.tracks)
         track.track_id = track_id
         self.tracks.append(track)
         return track
-        
+
     def remove_track(self, track_id: int) -> bool:
         """删除音轨"""
         if track_id < 0 or track_id >= len(self.tracks):
             return False
         del self.tracks[track_id]
-        for i in range(len(self.tracks)):
-            self.tracks[i].track_id = i
+        for i, track in enumerate(self.tracks):
+            track.track_id = i
         return True
 
     def set_bpm(self, bpm: int) -> None:
         """设置乐曲bpm"""
         self.bpm = bpm
-        
+
     def generate_waveform(self) -> np.ndarray:
         """生成音频数据"""
         max_len = 0
@@ -60,14 +62,13 @@ class DigitalSynthesizer:
         """播放音频"""
         sd.play(self.waveform, samplerate=self.sample_rate)
         sd.wait()
-        
+
     def save_to_file(self, filename: str) -> bool:
         """保存为文件"""
         wavfile.write(filename+'.wav', self.sample_rate, self.waveform.astype(np.float32))
-        
+
     def open_file(self, filename: str) -> bool:
         """打开文件"""
-        pass
 
 def play_instance():
     """播放实例"""
@@ -87,7 +88,7 @@ def play_instance():
     accompaniment.add_note_block("E2,C3,F2,C3".split(","),[2,2,2,2],start_beat=[1,1,4,4])
     accompaniment.add_note_block("F2,C3,G2,D3".split(","),[2,2,2,2],start_beat=[1,1,4,4])
     accompaniment.add_note_block("F2,A2,G2,C3,F2,C3".split(","),[2,2,1,1,1,1],start_beat=[1,1,3,3,4,4])
-    
+
     melody1 = Track()
     melody1.add_note_block(["E4","F#4","G#4","G#4","F#4","E4","E4"],[1,0.5,0.5,0.5,0.5,0.5,0.5],start_beat=[0,1,1.5,2,2.5,3,3.5])
     accompaniment1 = Track()
@@ -101,7 +102,7 @@ def play_instance():
 
     melody1.add_note_block(["E4","B4","E4","A4","G#4","F#4"],[0.5,0.5,0.5,0.5,0.5,1],start_beat=[0,0.5,1.5,2,2.5,3])
     accompaniment1.add_note_block(["B1","B2","B3","G#3","B1","B2","B3","G#3"],[2,2,1,1,1,1,1,1],start_beat=[0,0,1,1,2,2,3,3])
-    
+
     synthesizer.add_track(melody1)
     synthesizer.add_track(accompaniment1)
     synthesizer.generate_waveform()

@@ -1,32 +1,46 @@
+"""音块类"""
 import numpy as np
-from Note import Note
 import sounddevice as sd
 import matplotlib.pyplot as plt
+
+from Note import Note
 class NoteBlock:
     """音块类"""
 
-    def __init__(self, timbre: str = "violin", bpm: int = 120, sample_rate: int = 44100,
-                 note_names: list[str] = ["C4", "E4", "G4"], beat_times: list[float] = [1, 1, 1], 
-                 start_beat: list[float] = [0, 0, 0], volume: list[float] = [1, 1, 1], block_id: int = 0):
+    def __init__(self, timbre: str = "piano", bpm: int = 120, sample_rate: int = 44100,
+                 note_names: list[str] = None, beat_times: list[float] = None,
+                 start_beat: list[float] = None, volume: list[float] = None, block_id: int = 0):
+        # 设置默认值（避免共享默认列表）
+        if note_names is None:
+            note_names = ["C4", "E4", "G4"]
+        if beat_times is None:
+            beat_times = [1, 1, 1]
+        if start_beat is None:
+            start_beat = [0, 0, 0]
+        if volume is None:
+            volume = [1, 1, 1]
+
         # in接口
         self.block_id = block_id
         self.timbre = timbre
         self.bpm = bpm
         self.sample_rate = sample_rate
-        
+
         # 应用方法时需要修改的属性：
         self.note_names = []
         self.beat_times = []
         self.start_beat = []
         self.volume = []
         self.notes = []  # List[Note]
-        for i in range(len(note_names)):
-            self.add_note(note_names[i], beat_times[i], volume[i], start_beat[i])
-        for i in range(len(self.notes)):
-            self.notes[i].note_id = i
-        
+
+        for i, note_name in enumerate(note_names):
+            self.add_note(note_name, beat_times[i], volume[i], start_beat[i])
+        for i, note in enumerate(self.notes):
+            note.note_id = i
+
         # out接口
         self.waveform = None  # ndarray
+
 
     def generate_waveform(self) -> np.ndarray:
         """产生波形"""
@@ -39,7 +53,7 @@ class NoteBlock:
                 silence = np.zeros(int(self.start_beat[note.note_id] / self.bpm * 60 * self.sample_rate))
                 note.waveform = np.concatenate((silence, note.waveform))
                 max_len = max(max_len, len(note.waveform))
-            else: 
+            else:
                 note.generate_waveform()
                 max_len = max(max_len, len(note.waveform))
         # 填充音符长度不一致的音符
@@ -50,8 +64,9 @@ class NoteBlock:
         notes_waveform = [note.waveform for note in self.notes]
         self.waveform = sum(notes_waveform) if len(notes_waveform) > 1 else notes_waveform[0]
         return self.waveform
-    
+
     def show_time_domain(self):
+        """绘制时域特性"""
         t = np.linspace(0, (self.start_beat[0]+max(self.beat_times)-1)/self.bpm*60, len(self.waveform), endpoint=False)
         # -------- 时域图 --------
         plt.figure(figsize=(12, 5))
@@ -66,8 +81,7 @@ class NoteBlock:
     # 由于同一音块的音色、bpm和采样率相同，所以不需要传参
     def add_note(self, note_name: str, beat_time: float, volume: float, start_beat: float = 0) -> bool:
         """添加音符"""
-        id = len(self.notes)
-        note = Note(self.timbre, self.bpm, self.sample_rate, note_name, beat_time, volume, id)
+        note = Note(self.timbre, self.bpm, self.sample_rate, note_name, beat_time, volume, len(self.notes))
         self.note_names.append(note_name)
         self.beat_times.append(beat_time)
         self.volume.append(volume)
@@ -84,13 +98,15 @@ class NoteBlock:
         del self.beat_times[note_id]
         del self.volume[note_id]
         del self.start_beat[note_id]
-        for i in range(len(self.notes)):
-            self.notes[i].note_id = i
+        for i, note in enumerate(self.notes):
+            note.note_id = i
         return True
 
 if __name__ == "__main__":
     # 测试代码
-    note_block = NoteBlock(timbre="piano",note_names=["C4", "E4", "G4"], beat_times=[3, 2, 1], volume=[0.5, 0.5, 0.5], start_beat=[0, 1, 2], block_id=0)
+    note_block = NoteBlock(timbre="piano",note_names=["C4", "E4", "G4"],
+                           beat_times=[3, 2, 1], volume=[0.5, 0.5, 0.5],
+                           start_beat=[0, 1, 2], block_id=0)
     note_block.remove_note(2)
     note_block.add_note("G4", 1, 0.5, 2)
     print(note_block.note_names)
