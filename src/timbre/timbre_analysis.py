@@ -1,8 +1,10 @@
+"""基于单音的音色分析"""
 import numpy as np
 import librosa
 import matplotlib.pyplot as plt
 
 def timbre_analysis(filename: str) -> list[float]:
+    """分析谐波系数"""
     # 读取 WAV 文件
     waveform, sample_rate = librosa.load(filename, sr=None)
     # 使用前两秒的音频进行傅立叶分析，所以请确保前两秒是乐器的声音
@@ -15,7 +17,7 @@ def timbre_analysis(filename: str) -> list[float]:
 
     # 检测基频
     f0 = librosa.yin(waveform, fmin=50, fmax=2000, sr=sample_rate)[0]
-    
+
     # 提取前10个谐波的幅值
     harmonics = []
     for n in range(1, 17):
@@ -29,15 +31,15 @@ def timbre_analysis(filename: str) -> list[float]:
 
     return harmonics.tolist()
 
-"""
-if __name__ == "__main__":
-    filename = "audio/flute.wav"
-    harmonics = timbre_analysis(filename)
-    harmonics = [round(h, 3) for h in harmonics]
-    print("Harmonics:", harmonics)
-"""
+
+# if __name__ == "__main__":
+#     filename = "audio/flute.wav"
+#     harmonics = timbre_analysis(filename)
+#     harmonics = [round(h, 3) for h in harmonics]
+#     print("Harmonics:", harmonics)
 
 def adsr_analysis(filename: str) -> dict:
+    """分析adsr包络参数"""
     waveform, sample_rate = librosa.load(filename, sr=None)
     waveform = librosa.util.normalize(waveform)
 
@@ -91,11 +93,11 @@ def adsr_analysis(filename: str) -> dict:
     }
 
 if __name__ == "__main__":
-    filename = "audio/flute.wav"
+    filename1 = "audio/flute.wav"
     #filename = "E:/digital-synthesizer/audio/harp.mp3"
-    harmonics = timbre_analysis(filename)
-    harmonics = [round(h, 3) for h in harmonics]
-    print("Harmonics:", harmonics)
+    harmonics1 = timbre_analysis(filename1)
+    harmonics1 = [round(h, 3) for h in harmonics1]
+    print("Harmonics:", harmonics1)
 
-    adsr = adsr_analysis(filename)
+    adsr = adsr_analysis(filename1)
     print("Adsr:", adsr)

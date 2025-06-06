@@ -1,53 +1,22 @@
-# from timbre.adsr import apply_adsr
-# import numpy as np
-
-# def voice_w(freq, duration, sample_rate, volume):
-#     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
-
-#     # Vibrato 参数
-#     vibrato_rate = 6  # 颤音速率（Hz）
-#     vibrato_depth = 0.0001  # 颤音深度（相对主频的百分比）
-
-#     # 添加 vibrato 到频率上（调频）
-#     vibrato = 1 + vibrato_depth * np.sin(2 * np.pi * vibrato_rate * t)
-
-#     # 谐波系数
-#     harmonics = [1.0, 0.239, 0.623, 0.142, 0.041, 0.056, 0.06, 0.047, 0.037, 0.034, 0.033, 0.035, 0.035, 0.035, 0.035, 0.035]
-
-#     # 合成波形
-#     waveform = np.zeros_like(t)
-#     for n, amp in enumerate(harmonics):
-#         # 调制每个谐波的频率
-#         modulated_freq = freq * (n + 1) * vibrato
-#         waveform += amp * np.sin(2 * np.pi * modulated_freq * t)
-#     waveform *= volume
-
-#     # ADSR 包络
-#     attack_time = 0.02
-#     decay_time = 0.1
-#     sustain_level = 0.9
-#     release_time = 0.25
-#     waveform = apply_adsr(waveform, sample_rate, attack_time, decay_time, sustain_level, release_time)
-
-#     waveform /= np.max(np.abs(waveform)+1e-12)
-#     waveform *= volume
-
-#     return waveform
+"""可无视的基于C3分析的人声"""
 import numpy as np
 from scipy.signal import butter, lfilter, iirpeak
 from timbre.adsr import apply_adsr
 
 def highpass(data, cutoff, fs, order=3):
+    """高通滤波"""
     b, a = butter(order, cutoff / (fs / 2), btype='high')
     return lfilter(b, a, data)
 
 def apply_formant_filter(wave, fs, formants):
+    """共振峰滤波器"""
     for f0 in formants:
         b, a = iirpeak(f0 / (fs / 2), Q=10)
         wave = lfilter(b, a, wave)
     return wave
 
 def add_reverb(waveform, sample_rate, delay_time=0.03, decay=0.3):
+    """添加混响"""
     delay = int(delay_time * sample_rate)
     reverb = np.zeros_like(waveform)
     if delay < len(waveform):
@@ -55,6 +24,7 @@ def add_reverb(waveform, sample_rate, delay_time=0.03, decay=0.3):
     return waveform + reverb
 
 def voice_w(freq, duration, sample_rate, volume):
+    """基于C3分析得到的测试人声"""
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
 
     # 更自然 vibrato（速率随时间微变）

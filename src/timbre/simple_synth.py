@@ -1,3 +1,4 @@
+"""基于钢琴音色的自定义音色合成"""
 import numpy as np
 from timbre.adsr import apply_adsr
 from timbre.filter import lowpass_filter, band_filter

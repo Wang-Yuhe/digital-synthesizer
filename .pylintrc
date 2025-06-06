@@ -18,7 +18,8 @@ disable=
     R0801,  # Duplicate code
     R0902,
     R0917,
-    C0103
+    C0103,
+    R0914
 
 [FORMAT]
 # Google 推荐限制在 80-100 个字符，考虑到项目实际情况，设置为150

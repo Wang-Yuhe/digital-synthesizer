@@ -1,7 +1,9 @@
-from timbre.adsr import apply_adsr
+"""短笛音色"""
 import numpy as np
+from timbre.adsr import apply_adsr
 
 def piccolo(freq, duration, sample_rate, volume):
+    """短笛音色"""
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
 
     # Vibrato 参数

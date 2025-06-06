@@ -1,23 +1,24 @@
+"""竖琴音色"""
 import numpy as np
 from timbre.adsr import apply_adsr
 from timbre.filter import lowpass_filter
 from timbre.oscillator import oscillator
-import sounddevice as sd#到时候可以删去
 
 def harp(freq, duration, sample_rate, volume):
+    """竖琴音色"""
     harmonics = [1.0, 0.555, 0.016, 0.025, 0.691, 0.011, 0.006, 0.039, 0.008, 0.012, 0.022, 0.028, 0.015, 0.005, 0.015, 0.011]
     waveform=timbre_synthesis(freq, duration, sample_rate, volume, harmonics)
     return waveform
 
 def lfo(freq, lfo_rate, lfo_depth, t):
-    """
-    lfo = np.sin(2 * np.pi * lfo_rate * t)
-    freq = freq + lfo_depth*lfo
-    return freq
-    """
+    """低频振荡器"""
+    # lfo = np.sin(2 * np.pi * lfo_rate * t)
+    # freq = freq + lfo_depth*lfo
+    # return freq
     return t + (lfo_depth / (2*np.pi*lfo_rate)) * (1-np.cos(2*np.pi*lfo_rate*t))#周期性时移
 
 def timbre_synthesis(freq, duration, sample_rate, volume, harmonics):
+    """根据不同的音高（时域频率）合成音色"""
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
     lfo_t = lfo(freq, 5, 0.001, t)#lfo调制，模拟琴弦波动
     #freq = lfo(freq, 8, 0.01, t)
