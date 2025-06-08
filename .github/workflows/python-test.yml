@@ -22,6 +22,6 @@ jobs:
           pip install pytest-cov
 
       - name: Run tests
-        run: ｜
+        run: |
           export PYTHONPATH=$PYTHONPATH:./src
           python -m pytest
