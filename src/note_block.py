@@ -3,7 +3,7 @@ import numpy as np
 import sounddevice as sd
 import matplotlib.pyplot as plt
 
-from Note import Note
+from note import Note
 class NoteBlock:
     """音块类"""
 

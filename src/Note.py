@@ -95,6 +95,8 @@ class Note:
             self.waveform = cello(freq, self.duration, self.sample_rate, self.volume)
         elif self.timbre == "double_bass":
             self.waveform = double_bass(freq, self.duration, self.sample_rate, self.volume)
+        else:
+            raise ValueError(f"Unknown timbre: {self.timbre}")
         return self.waveform
 
     def show_time_and_freq_domain(self):
