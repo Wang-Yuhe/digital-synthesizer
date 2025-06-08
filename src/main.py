@@ -1,6 +1,6 @@
 """用以展示部分后端功能"""
-from digital_synthesizer import DigitalSynthesizer
-from track import Track
+from src.digital_synthesizer import DigitalSynthesizer
+from src.track import Track
 
 def music1(timbre="piano"):
     """展示乐段1，生日歌"""

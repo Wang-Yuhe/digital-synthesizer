@@ -2,7 +2,7 @@
 import numpy as np
 import sounddevice as sd
 
-from note_block import NoteBlock
+from src.note_block import NoteBlock
 class Track:
     """音轨类"""
 

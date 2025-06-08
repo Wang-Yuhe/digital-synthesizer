@@ -3,8 +3,8 @@ import numpy as np
 import sounddevice as sd
 from scipy.io import wavfile
 
-from track import Track
-from timbre.panning import dynamic_panning
+from src.track import Track
+from src.timbre.panning import dynamic_panning
 class DigitalSynthesizer:
     """数字音乐合成器主控类"""
 
