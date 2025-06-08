@@ -15,4 +15,4 @@ venv/
 .idea
 
 # coverage
-。coverage
+.coverage
