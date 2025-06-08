@@ -1,6 +1,6 @@
 """短笛音色"""
 import numpy as np
-from timbre.adsr import apply_adsr
+from src.timbre.adsr import apply_adsr
 
 def piccolo(freq, duration, sample_rate, volume):
     """短笛音色"""

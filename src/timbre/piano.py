@@ -1,8 +1,8 @@
 """钢琴音色"""
 import numpy as np
-from timbre.adsr import apply_adsr
-from timbre.filter import lowpass_filter
-from timbre.oscillator import oscillator
+from src.timbre.adsr import apply_adsr
+from src.timbre.filter import lowpass_filter
+from src.timbre.oscillator import oscillator
 
 def lfo(freq, lfo_rate, lfo_depth, t):
     """低频振荡器"""

@@ -1,7 +1,6 @@
 """小提琴音色"""
 import numpy as np
-from timbre.adsr import apply_adsr
-
+from src.timbre.adsr import apply_adsr
 
 def rms_normalize(waveform):
     """使用RMS归一化波形"""

@@ -1,6 +1,6 @@
 """长笛音色"""
 import numpy as np
-from timbre.adsr import apply_adsr
+from src.timbre.adsr import apply_adsr
 
 def flute(freq, duration, sample_rate, volume):
     """长笛音色"""

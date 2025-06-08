@@ -1,7 +1,7 @@
 """可无视的基于C3分析的人声"""
 import numpy as np
 from scipy.signal import butter, lfilter, iirpeak
-from timbre.adsr import apply_adsr
+from src.timbre.adsr import apply_adsr
 
 def highpass(data, cutoff, fs, order=3):
     """高通滤波"""
