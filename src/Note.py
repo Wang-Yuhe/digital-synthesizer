@@ -2,15 +2,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from timbre.piano import piano
-from timbre.violin import violin
-from timbre.viola import viola
-from timbre.cello import cello
-from timbre.double_bass import double_bass
-from timbre.harp import harp
-from timbre.flute import flute
-from timbre.piccolo import piccolo
-from timbre.voice_w import voice_w
+from src.timbre.piano import piano
+from src.timbre.violin import violin
+from src.timbre.viola import viola
+from src.timbre.cello import cello
+from src.timbre.double_bass import double_bass
+from src.timbre.harp import harp
+from src.timbre.flute import flute
+from src.timbre.piccolo import piccolo
+from src.timbre.voice_w import voice_w
 
 class Note:
     """音符类"""
@@ -41,7 +41,7 @@ class Note:
         for k in sorted(note_map.keys(), key=lambda x: -len(x)):
             if self.note_name.startswith(k):
                 octave = int(self.note_name[len(k):])
-                return 12 * octave + note_map[k]
+                return 12 * (octave + 1) + note_map[k]
         raise ValueError("Invalid note format")
 
     def __lt__(self, other):
