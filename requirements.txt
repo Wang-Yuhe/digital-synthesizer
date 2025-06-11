@@ -3,3 +3,4 @@ scipy
 matplotlib
 sounddevice
 librosa
+pytest
