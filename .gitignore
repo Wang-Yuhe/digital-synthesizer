@@ -16,3 +16,6 @@ venv/
 
 # coverage
 .coverage
+
+# htmlcov
+htmlcov/

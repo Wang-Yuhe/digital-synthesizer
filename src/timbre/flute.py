@@ -4,6 +4,9 @@ from src.timbre.adsr import apply_adsr
 
 def flute(freq, duration, sample_rate, volume):
     """长笛音色"""
+    if duration == 0:
+        return np.zeros(0)
+
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
 
     # Vibrato 参数
@@ -14,7 +17,8 @@ def flute(freq, duration, sample_rate, volume):
     vibrato = 1 + vibrato_depth * np.sin(2 * np.pi * vibrato_rate * t)
 
     # 谐波系数
-    harmonics = [1.0, 0.209, 0.903, 0.141, 0.188, 0.153, 0.044, 0.061, 0.01, 0.057, 0.02, 0.003, 0.006, 0.006, 0.004, 0.009]
+    # harmonics = [1.0, 0.209, 0.903, 0.141, 0.188, 0.153, 0.044, 0.061, 0.01, 0.057, 0.02, 0.003, 0.006, 0.006, 0.004, 0.009]
+    harmonics = [1.0, 0.18, 0.606, 0.039, 0.256, 0.135, 0.047, 0.04, 0.051, 0.048, 0.026, 0.018, 0.014, 0.012, 0.007, 0.008]
 
     # 合成波形
     waveform = np.zeros_like(t)

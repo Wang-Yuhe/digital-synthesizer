@@ -79,6 +79,9 @@ class Track:
     def generate_waveform(self) -> np.ndarray:
         """生成音频数据"""
         self.waveform = [note_block.generate_waveform() for note_block in self.note_blocks]
+        if len(self.waveform) == 0:
+            self.waveform = np.array([], dtype=np.float32)
+            return self.waveform
         self.waveform = np.concatenate(self.waveform) * self.volume
         return self.waveform
 
@@ -92,6 +95,13 @@ class Track:
 
     def change_timbre(self, target_timbre: str) -> bool:
         """改变音色"""
+        if target_timbre == self.timbre:
+            return False
+        self.timbre = target_timbre
+        for note_block in self.note_blocks:
+            note_block.timbre = target_timbre
+        self.generate_waveform()
+        return True
 
 def play_little_star():
     """用以临时测试，演奏小星星"""

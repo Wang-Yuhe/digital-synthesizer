@@ -44,6 +44,9 @@ class NoteBlock:
 
     def generate_waveform(self) -> np.ndarray:
         """产生波形"""
+        if len(self.notes) == 0:
+            self.waveform = np.zeros(0)
+            return self.waveform
         max_len = 0
         # 填充不从0开始的音符
         for note in self.notes:
@@ -67,6 +70,9 @@ class NoteBlock:
 
     def show_time_domain(self):
         """绘制时域特性"""
+        if len(self.waveform) == 0:
+            print("No waveform data to display.")
+            return
         t = np.linspace(0, (self.start_beat[0]+max(self.beat_times)-1)/self.bpm*60, len(self.waveform), endpoint=False)
         # -------- 时域图 --------
         plt.figure(figsize=(12, 5))

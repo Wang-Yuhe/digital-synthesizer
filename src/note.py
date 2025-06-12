@@ -74,7 +74,7 @@ class Note:
     def generate_waveform(self) -> np.ndarray:
         """产生波形数据"""
         freq=self.note2freq(self.note_name)
-        if freq==0:
+        if freq==0 or self.duration <= 0:
             self.waveform = np.zeros(int(self.sample_rate * self.duration))
             return self.waveform
         if self.timbre == "piano":
