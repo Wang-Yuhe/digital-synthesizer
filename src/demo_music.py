@@ -37,7 +37,7 @@ def music2(timbre="piano"):
 
     return melody1, accompaniment1
 
-if __name__=="__main__":
+if __name__=="__main__": # pragma: no cover
     synthesizer = DigitalSynthesizer(volume=0.5)
     melody, accompaniment=music1(timbre="piano")
     #melody, accompaniment=music2()

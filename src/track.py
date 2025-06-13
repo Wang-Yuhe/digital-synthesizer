@@ -103,7 +103,7 @@ class Track:
         self.generate_waveform()
         return True
 
-def play_little_star():
+def play_little_star(): # pragma: no cover
     """用以临时测试，演奏小星星"""
     # 主旋律轨道 (保持不变)
     track = Track("piano", "C3-B5", 120, 44100, 0.5, 0)
@@ -153,5 +153,6 @@ def play_little_star():
     print(track.calculate_pitch_range())
     sd.play(track.waveform, samplerate=track.sample_rate)
     sd.wait()
-if __name__ == "__main__":
+
+if __name__ == "__main__": # pragma: no cover
     play_little_star()

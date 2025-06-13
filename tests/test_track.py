@@ -80,3 +80,5 @@ def test_change_timbre():
     assert success is True
     assert track.timbre == "flute"
     assert all(nb.timbre == "flute" for nb in track.note_blocks)
+    success = track.change_timbre("flute")
+    assert success is False

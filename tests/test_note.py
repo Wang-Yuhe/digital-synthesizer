@@ -22,11 +22,15 @@ def test_note_comparisons():
     assert Note(note_name="C4") < Note(note_name="D4")
     assert Note(note_name="C4") == Note(note_name="C4")
     assert Note(note_name="E4") > Note(note_name="D#4")
+    with pytest.raises(ValueError):
+        assert Note(note_name="rest") < Note(note_name="C4")
 
 def test_note2freq():
     note = Note(note_name="A4")
     assert note.note2freq("A4") == pytest.approx(440.0, abs=0.01)
     assert note.note2freq("C4") == pytest.approx(261.63, rel=0.01)
+    with pytest.raises(ValueError):
+        note.note2freq("H#4")
 
 def test_generate_waveform():
     note = Note(note_name="C4", timbre="piano", beat_time=1.0)
@@ -50,7 +54,7 @@ def test_unknown_timbre_raises_error():
         note.generate_waveform()
 
 def test_generate_waveform_with_various_timbres():
-    timbres = ["piano", "flute", "harp", "violin"]
+    timbres = ["piano", "flute", "harp", "violin", "cello", "viola", "double_bass", "piccolo", "voice_w"]
     for timbre in timbres:
         note = Note(note_name="A4", timbre=timbre, beat_time=1.0)
         waveform = note.generate_waveform()

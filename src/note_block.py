@@ -108,7 +108,7 @@ class NoteBlock:
             note.note_id = i
         return True
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     # 测试代码
     note_block = NoteBlock(timbre="piano",note_names=["C4", "E4", "G4"],
                            beat_times=[3, 2, 1], volume=[0.5, 0.5, 0.5],

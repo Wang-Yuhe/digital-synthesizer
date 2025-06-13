@@ -134,7 +134,7 @@ class Note:
         plt.tight_layout()
         plt.show()
 
-if __name__=="__main__":
+if __name__=="__main__": # pragma: no cover
     note1=Note("piano",60,44100,"C4",2,1,0)
     #note2=Note("piano",60,44100,"Db4",2,0.5,0)
     note1.generate_waveform()

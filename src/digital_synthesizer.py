@@ -70,7 +70,7 @@ class DigitalSynthesizer:
     def open_file(self, filename: str) -> bool:
         """打开文件"""
 
-def play_instance():
+def play_instance(): # pragma: no cover
     """播放实例"""
     synthesizer = DigitalSynthesizer(volume=0.5)
 
@@ -109,5 +109,5 @@ def play_instance():
     synthesizer.waveform = dynamic_panning(synthesizer.waveform)
     synthesizer.play_for_preview()
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     play_instance()
