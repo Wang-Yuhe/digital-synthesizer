@@ -92,7 +92,7 @@ def adsr_analysis(filename: str) -> dict:
         "release_rate": release_time/times
     }
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     filename1 = "audio/flute.wav"
     #filename = "E:/digital-synthesizer/audio/harp.mp3"
     harmonics1 = timbre_analysis(filename1)

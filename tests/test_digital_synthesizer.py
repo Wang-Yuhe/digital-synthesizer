@@ -1,4 +1,5 @@
 import numpy as np
+from unittest.mock import patch
 from src.digital_synthesizer import DigitalSynthesizer
 from src.track import Track
 
@@ -47,3 +48,33 @@ def test_remove_track_invalid_id():
     synth = DigitalSynthesizer()
     result = synth.remove_track(0)  # 没有轨道，删除应失败
     assert result is False
+
+@patch("sounddevice.play")
+@patch("sounddevice.wait")
+def test_play_for_preview(mock_wait, mock_play):
+    synth = DigitalSynthesizer()
+    track = Track(timbre="piano")
+    track.add_note_block(["C4"], [1])
+    synth.add_track(track)
+    synth.generate_waveform()
+
+    synth.play_for_preview()
+
+    mock_play.assert_called_once()
+    mock_wait.assert_called_once()
+
+@patch("scipy.io.wavfile.write")
+def test_save_to_file(mock_write):
+    synth = DigitalSynthesizer()
+    track = Track(timbre="piano")
+    track.add_note_block(["C4"], [1])
+    synth.add_track(track)
+    synth.generate_waveform()
+
+    synth.save_to_file("test_output")
+
+    mock_write.assert_called_once()
+    args, kwargs = mock_write.call_args
+    assert args[0] == "test_output.wav"
+    assert args[1] == synth.sample_rate
+    assert isinstance(args[2], np.ndarray)

@@ -32,7 +32,7 @@ def oscillator(wave_type: str, frequency: float, t: list) -> np.ndarray:
 
     raise ValueError(f"Unsupported wave_type: {wave_type}. Choose from 'sine', 'square', 'sawtooth', 'triangle'.")
 
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
     wave = oscillator('triangle', 440, np.linspace(0, 1.0, 44100, endpoint=False))
     plt.plot(wave)
     plt.title('440 Hz Sine Wave')
