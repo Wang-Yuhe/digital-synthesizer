@@ -1,103 +1,97 @@
-"""基于单音的音色分析"""
+"""音色分析（改进）"""
+from pathlib import Path
 import numpy as np
 import librosa
-import matplotlib.pyplot as plt
 
-def timbre_analysis(filename: str) -> list[float]:
-    """分析谐波系数"""
-    # 读取 WAV 文件
-    waveform, sample_rate = librosa.load(filename, sr=None)
-    # 使用前两秒的音频进行傅立叶分析，所以请确保前两秒是乐器的声音
-    waveform = waveform[: sample_rate * 2 + 1]
+def timbre_analysis_list(
+    filename: str,
+    frame_length: int = 2048,#窗口大小
+    hop_length: int = 512,#移动步长
+    n_harmonics: int = 16,
+    fmin: float = 50,
+    fmax: float = 3000
+) -> tuple[list[str], list[list[float]]]:
+    """
+    对旋律或和声音频进行音色分析：
 
-    # 傅里叶变换
-    spectrum = np.fft.rfft(waveform)
-    freqs = np.fft.rfftfreq(len(waveform), d=1/sample_rate)
-    magnitude = np.abs(spectrum)
+    步骤：
+      1) 使用 YIN 算法逐帧进行基频跟踪（pyin）。
+      2) 对每帧提取基频的前 n 个谐波的幅度，并归一化。
+      3) 对连续相同音高的帧进行平均处理，返回一个音符名称列表和其对应的归一化谐波特征。
 
-    # 检测基频
-    f0 = librosa.yin(waveform, fmin=50, fmax=2000, sr=sample_rate)[0]
+    Args:
+        filename (str): 音频文件路径
+        frame_length (int): STFT 的窗口长度
+        hop_length (int): STFT 的帧移
+        n_harmonics (int): 提取前几个谐波（默认16）
+        fmin (float): 基频检测的最小频率（Hz）
+        fmax (float): 基频检测的最大频率（Hz）
 
-    # 提取前10个谐波的幅值
-    harmonics = []
-    for n in range(1, 17):
-        harmonic_freq = f0 * n
-        idx = np.argmin(np.abs(freqs - harmonic_freq))
-        harmonics.append(magnitude[idx])
+    Returns:
+        Tuple[list[str], list[list[float]]]:
+            - list[str]: 音符名称序列（如 ['C4', 'G4', ...]）
+            - list[list[float]]: 对应的谐波能量分布（归一化）
+    """
+    y, sr = librosa.load(filename, sr=None)
 
-    # 归一化
-    harmonics = np.array(harmonics)
-    harmonics /= harmonics[0]  # 基频幅值归一为 1.0
+    # 基频跟踪
+    f0_series, voiced_flag, voiced_prob = librosa.pyin(y, fmin=fmin, fmax=fmax,
+                    sr=sr,frame_length=frame_length, hop_length=hop_length)#pyin效果更好
+    S = np.abs(librosa.stft(y, n_fft=frame_length, hop_length=hop_length))#短时傅里叶变换
+    #S[f, t]第t帧频率f上的振幅
+    freqs = np.linspace(0, sr/2, num=S.shape[0])
 
-    return harmonics.tolist()
+    result = []
+    result_notename = []
+    for t, f0 in enumerate(f0_series):
+        if np.isnan(f0) or f0 <= 0 or not voiced_flag[t] or voiced_prob[t]<0.3:
+            continue
+        mags = []
+        for h in range(1, n_harmonics + 1):
+            #原来的谐波成分是找频率点，而事实上有时并不完全为整数倍，这里找范围内峰值最高的
+            target_freq = f0 * h
+            search_radius = 0.05 * target_freq
+            mask = np.where((freqs >= target_freq - search_radius) & (freqs <= target_freq + search_radius))[0]
 
+            if len(mask) == 0:
+                mags.append(0.0)
+                continue
 
-# if __name__ == "__main__":
-#     filename = "audio/flute.wav"
-#     harmonics = timbre_analysis(filename)
-#     harmonics = [round(h, 3) for h in harmonics]
-#     print("Harmonics:", harmonics)
+            local_mags = S[mask, t]
+            max_idx_in_window = np.argmax(local_mags)
+            mags.append(local_mags[max_idx_in_window])
 
-def adsr_analysis(filename: str) -> dict:
-    """分析adsr包络参数"""
-    waveform, sample_rate = librosa.load(filename, sr=None)
-    waveform = librosa.util.normalize(waveform)
+        mags = np.array(mags)
+        rel = (mags / mags[0]).tolist()
+        result_notename.append(librosa.midi_to_note(librosa.hz_to_midi(f0)))
+        result.append(rel)
 
-    # 计算音量包络（RMS）
-    frame_length = 2048
-    hop_length = 512
-    rms = librosa.feature.rms(y=waveform, frame_length=frame_length, hop_length=hop_length)[0]
-    times = librosa.times_like(rms, sr=sample_rate, hop_length=hop_length)
-    envelope = rms / np.max(rms)
+    grouped_names = []
+    grouped_results = []
+    if len(result_notename)==0:
+        return [], []
+    current_name = result_notename[0]
+    buffer = [result[0]]
+    for name, vec in zip(result_notename[1:], result[1:]):
+        if name == current_name:
+            buffer.append(vec)
+        else:
+            avg_vec = np.mean(buffer, axis=0).tolist()
+            grouped_names.append(current_name)
+            grouped_results.append(avg_vec)
+            current_name = name
+            buffer = [vec]
+    avg_vec = np.mean(buffer, axis=0).tolist()
+    grouped_names.append(current_name)
+    grouped_results.append(avg_vec)
 
-    # 找 Attack 峰
-    peak_idx = np.argmax(envelope)
-    peak_time = times[peak_idx]
-    attack_time = peak_time
+    return grouped_names, grouped_results
 
-    # 找 Decay 到 Sustain（设定阈值）
-    sustain_level = 0.3  # 设定一个阈值，表示sustain的音量比例
-    decay_idx = peak_idx
-    while decay_idx < len(envelope) and envelope[decay_idx] > sustain_level:
-        decay_idx += 1
+if __name__ == "__main__":
+    base = Path(__file__).resolve().parent.parent
+    filename1 = base.parent / 'audio' / 'piano' / 'test.wav'
+    notename1, result1 = timbre_analysis_list(filename1)
 
-    decay_time = times[decay_idx] - peak_time
-
-    # Sustain：从 decay 后保持到包络明显下降为止
-    release_start_idx = decay_idx
-    threshold = 0.1
-    while release_start_idx < len(envelope) and envelope[release_start_idx] > threshold:
-        release_start_idx += 1
-
-    sustain_time = times[release_start_idx] - times[decay_idx]
-
-    # Release：从 sustain 结束到归零
-    release_time = times[-1] - times[release_start_idx]
-
-    plt.figure(figsize=(12, 4))
-    librosa.display.waveshow(waveform, sr=sample_rate)
-    plt.title("Waveform (Time Domain)")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Amplitude")
-    plt.tight_layout()
-    plt.show()
-
-    times=attack_time+decay_time+sustain_time+release_time
-
-    return {
-        "attack_rate": attack_time/times,
-        "decay_rate": decay_time/times,
-        "sustain_level": sustain_level,
-        "sustain_rate": sustain_time/times,
-        "release_rate": release_time/times
-    }
-
-if __name__ == "__main__": # pragma: no cover
-    filename1 = "audio/flute.wav"
-    #filename = "E:/digital-synthesizer/audio/harp.mp3"
-    harmonics1 = timbre_analysis(filename1)
-    harmonics1 = [round(h, 3) for h in harmonics1]
-    print("Harmonics:", harmonics1)
-
-    adsr = adsr_analysis(filename1)
-    print("Adsr:", adsr)
+    for i, res in enumerate(result1):
+        print(f"pitch:{notename1[i]}")
+        print(res)

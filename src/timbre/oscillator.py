@@ -4,15 +4,15 @@ import matplotlib.pyplot as plt
 
 def oscillator(wave_type: str, frequency: float, t: list) -> np.ndarray:
     """
-    Generate an audio waveform of given type.
+    振荡器，生成指定的波形
 
-    Parameters:
-    - wave_type: 'sine', 'square', 'sawtooth', or 'triangle'
-    - frequency: Frequency of the waveform in Hz
-    - t: Sample ponits
+    Args:
+        wave_type (str): 'sine', 'square', 'sawtooth', or 'triangle'
+        frequency (float): 波形的频率，Hz为单位
+        t (list): 采样点
 
     Returns:
-    - A numpy array containing the generated waveform.
+        waveform (np.ndarray): 生成的波形
     """
     if wave_type == 'sine':
         # Sine wave: sin(2πft)

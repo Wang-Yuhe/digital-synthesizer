@@ -6,9 +6,20 @@ from scipy.io import wavfile
 from src.track import Track
 from src.timbre.panning import dynamic_panning
 class DigitalSynthesizer:
-    """数字音乐合成器主控类"""
+    """数字音乐合成器主控类。
+
+    管理多个音轨（Track），可生成混合音频波形，播放或保存为音频文件。
+    """
 
     def __init__(self, bpm: int = 120, sample_rate: int = 44100, volume: float = 1.0):
+        """
+        初始化合成器参数。
+
+        Args:
+            bpm (int): 每分钟节拍数（默认 120）。
+            sample_rate (int): 采样率（Hz），默认 44100。
+            volume (float): 主音量（0.0 ~ 1.0），默认 1.0。
+        """
         self.tracks = []  # List[Track]
         self.waveform = None  # ndarray
         self.bpm = bpm
@@ -18,21 +29,49 @@ class DigitalSynthesizer:
 
     def add_track_by_property(self, timbre: str, pitch_range: str, bpm: int,
                               sample_rate: int, volume: float) -> Track:
-        """添加音轨"""
+        """
+        根据属性创建并添加一条音轨。
+
+        Args:
+            timbre (str): 音色类型。
+            pitch_range (str): 音高范围。
+            bpm (int): 音轨节拍速度。
+            sample_rate (int): 音轨采样率。
+            volume (float): 音轨音量。
+
+        Returns:
+            Track: 新增的音轨实例。
+        """
         track_id = len(self.tracks)
         track = Track(timbre, pitch_range, bpm, sample_rate, volume, track_id)
         self.tracks.append(track)
         return track
 
     def add_track(self, track: Track) -> Track:
-        """添加音轨"""
+        """
+        添加已有的音轨对象。
+
+        Args:
+            track (Track): 待添加的音轨对象。
+
+        Returns:
+            Track: 添加后的音轨。
+        """
         track_id = len(self.tracks)
         track.track_id = track_id
         self.tracks.append(track)
         return track
 
     def remove_track(self, track_id: int) -> bool:
-        """删除音轨"""
+        """
+        根据 track_id 删除音轨。
+
+        Args:
+            track_id (int): 要删除的音轨索引。
+
+        Returns:
+            bool: 删除成功返回 True，否则返回 False。
+        """
         if track_id < 0 or track_id >= len(self.tracks):
             return False
         del self.tracks[track_id]
@@ -41,11 +80,21 @@ class DigitalSynthesizer:
         return True
 
     def set_bpm(self, bpm: int) -> None:
-        """设置乐曲bpm"""
+        """
+        设置合成器的节拍速度。
+
+        Args:
+            bpm (int): 每分钟节拍数。
+        """
         self.bpm = bpm
 
     def generate_waveform(self) -> np.ndarray:
-        """生成音频数据"""
+        """
+        根据所有音轨生成合成波形。
+
+        Returns:
+            waveform (np.ndarray): 合成的音频数据。
+        """
         max_len = 0
         for track in self.tracks:
             track.generate_waveform()
@@ -64,7 +113,15 @@ class DigitalSynthesizer:
         sd.wait()
 
     def save_to_file(self, filename: str) -> bool:
-        """保存为文件"""
+        """
+        将当前音频波形保存为 WAV 文件。
+
+        Args:
+            filename (str): 文件名（不带扩展名）。
+
+        Returns:
+            bool: 保存成功返回 True。
+        """
         wavfile.write(filename+'.wav', self.sample_rate, self.waveform.astype(np.float32))
 
     def open_file(self, filename: str) -> bool:

@@ -12,7 +12,18 @@ def lfo(freq, lfo_rate, lfo_depth, t):
     # return t + (lfo_depth / (2*np.pi*lfo_rate)) * (1-np.cos(2*np.pi*lfo_rate*t))#周期性时移
 
 def piano(freq, duration, sample_rate, volume):
-    """钢琴音色"""
+    """
+    钢琴音色
+
+    Args:
+        freq (float): 频率
+        duration (float): 时值，表示单音的持续时间
+        sample_rate (float): 采样率
+        volume (float): 音量大小，0~1的范围
+    
+    Returns:
+        waveform (np.ndarray): 合成钢琴音色后的波形
+    """
     # harmonics = [1.0, 0.144, 0.107, 0.165, 0.059, 0.122, 0.136, 0.26, 0.245, 0.653, 0.02, 0.18, 0.064, 0.121, 0.014, 0.028]
     # harmonics = [1.0, 0.778, 0.019, 0.085, 0.023, 0.034, 0.065, 0.023, 0.031, 0.015, 0.009, 0.019, 0.053, 0.018, 0.052, 0.004]
     harmonics = [1.0, 0.8806691627639035, 0.12006790037144367, 0.14348630114711755,

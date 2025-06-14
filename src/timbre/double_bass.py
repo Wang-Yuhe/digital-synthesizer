@@ -10,7 +10,18 @@ def rms_normalize(waveform):
     return waveform
 
 def double_bass(freq, duration, sample_rate, volume):
-    """低音提琴音色"""
+    """
+    低音提琴音色
+
+    Args:
+        freq (float): 频率
+        duration (float): 时值，表示单音的持续时间
+        sample_rate (float): 采样率
+        volume (float): 音量大小，0~1的范围
+    
+    Returns:
+        waveform (np.ndarray): 合成低音提琴音色后的波形
+    """
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
 
     # 调整谐波成分，以接近低音提琴的音色

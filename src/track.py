@@ -4,10 +4,21 @@ import sounddevice as sd
 
 from src.note_block import NoteBlock
 class Track:
-    """音轨类"""
+    """音轨类，用于管理一个完整的乐器音轨，包括多个音块、音色、节奏、采样率等信息"""
 
     def __init__(self, timbre: str = "piano", pitch_range: str = "C3-B5", bpm: int = 120,
                  sample_rate:int = 44100, volume: float = 1, track_id: int = 0):
+        """
+        初始化一个音轨对象。
+
+        参数：
+            timbre (str): 音轨的音色类型，如 piano、violin 等。
+            pitch_range (str): 音轨允许的音高范围（用于显示），如 "C3-B5"。
+            bpm (int): 每分钟节拍数（Beats Per Minute）。
+            sample_rate (int): 音频采样率，单位为 Hz。
+            volume (float): 音轨的整体音量控制（范围为0~1）。
+            track_id (int): 音轨的编号，用于标识。
+        """
         #in接口
         self.bpm = bpm
         self.sample_rate = sample_rate
@@ -68,7 +79,15 @@ class Track:
 
 
     def remove_note_block(self, block_id: int) -> bool:
-        """删除音块"""
+        """
+        删除指定编号的音块。
+
+        参数：
+            block_id (int): 要删除的音块编号。
+
+        返回：
+            bool: 删除成功返回 True，否则 False。
+        """
         if block_id < 0 or block_id >= len(self.note_blocks):
             return False
         del self.note_blocks[block_id]
@@ -77,7 +96,13 @@ class Track:
         return True
 
     def generate_waveform(self) -> np.ndarray:
-        """生成音频数据"""
+        """
+        生成当前音轨的合成波形（包括所有音块）。
+        将每个音块的波形拼接并乘以该音轨的音量比例。
+
+        返回：
+            np.ndarray: 该音轨的最终音频波形。
+        """
         self.waveform = [note_block.generate_waveform() for note_block in self.note_blocks]
         if len(self.waveform) == 0:
             self.waveform = np.array([], dtype=np.float32)
@@ -86,7 +111,12 @@ class Track:
         return self.waveform
 
     def calculate_pitch_range(self) -> str:
-        """计算音高区间"""
+        """
+        计算并返回当前音轨的音高范围。
+
+        返回：
+            str: 音高范围字符串，如 "C3-A5"，或 "No notes in track"。
+        """
         if self.lowest_note is None or self.highest_note is None:
             self.pitch_range = "No notes in track"
         else:
@@ -94,7 +124,15 @@ class Track:
         return self.pitch_range
 
     def change_timbre(self, target_timbre: str) -> bool:
-        """改变音色"""
+        """
+        更改音轨音色。
+
+        参数：
+            target_timbre (str): 新音色名称。
+
+        返回：
+            bool: 若音色发生改变则返回 True，否则返回 False。
+        """
         if target_timbre == self.timbre:
             return False
         self.timbre = target_timbre

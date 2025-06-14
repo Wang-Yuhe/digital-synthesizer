@@ -5,7 +5,18 @@ from src.timbre.filter import lowpass_filter
 from src.timbre.oscillator import oscillator
 
 def harp(freq, duration, sample_rate, volume):
-    """竖琴音色"""
+    """
+    竖琴音色
+
+    Args:
+        freq (float): 频率
+        duration (float): 时值，表示单音的持续时间
+        sample_rate (float): 采样率
+        volume (float): 音量大小，0~1的范围
+    
+    Returns:
+        waveform (np.ndarray): 合成竖琴音色后的波形
+    """
     harmonics = [1.0, 0.555, 0.016, 0.025, 0.691, 0.011, 0.006, 0.039, 0.008, 0.012, 0.022, 0.028, 0.015, 0.005, 0.015, 0.011]
     waveform=timbre_synthesis(freq, duration, sample_rate, volume, harmonics)
     return waveform

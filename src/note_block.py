@@ -5,11 +5,28 @@ import matplotlib.pyplot as plt
 
 from src.note import Note
 class NoteBlock:
-    """音块类"""
+    """音块类。
+
+    用于组织多个音符（Note），具备生成波形、绘图、添加/删除音符的功能。
+    每个音块中音符共享相同的音色、BPM 和采样率。
+    """
 
     def __init__(self, timbre: str = "piano", bpm: int = 120, sample_rate: int = 44100,
                  note_names: list[str] = None, beat_times: list[float] = None,
                  start_beat: list[float] = None, volume: list[float] = None, block_id: int = 0):
+        """
+        初始化音块。
+
+        Args:
+            timbre (str): 音色名称，例如 "piano"。
+            bpm (int): 每分钟节拍数（Beats Per Minute）。
+            sample_rate (int): 采样率（Hz）。
+            note_names (list[str], optional): 音符名称列表（如 ["C4", "E4"]）。
+            beat_times (list[float], optional): 每个音符持续的节拍数。
+            start_beat (list[float], optional): 每个音符起始节拍位置。
+            volume (list[float], optional): 每个音符的音量（0.0 ~ 1.0）。
+            block_id (int): 音块编号。
+        """
         # 设置默认值（避免共享默认列表）
         if note_names is None:
             note_names = ["C4", "E4", "G4"]
@@ -43,7 +60,12 @@ class NoteBlock:
 
 
     def generate_waveform(self) -> np.ndarray:
-        """产生波形"""
+        """
+        生成音块对应的音频波形。
+
+        Returns:
+            waveform (np.ndarray): 该音块的音频波形数据。
+        """
         if len(self.notes) == 0:
             self.waveform = np.zeros(0)
             return self.waveform
@@ -69,7 +91,9 @@ class NoteBlock:
         return self.waveform
 
     def show_time_domain(self):
-        """绘制时域特性"""
+        """
+        绘制音块波形的时域图。
+        """
         if len(self.waveform) == 0:
             print("No waveform data to display.")
             return
@@ -86,7 +110,18 @@ class NoteBlock:
 
     # 由于同一音块的音色、bpm和采样率相同，所以不需要传参
     def add_note(self, note_name: str, beat_time: float, volume: float, start_beat: float = 0) -> bool:
-        """添加音符"""
+        """
+        添加一个音符到音块中。
+
+        Args:
+            note_name (str): 音符名称（如 "C4"）。
+            beat_time (float): 音符持续的节拍数。
+            volume (float): 音符音量（0.0 ~ 1.0）。
+            start_beat (float): 音符开始的节拍位置。
+
+        Returns:
+            bool: 添加成功返回 True。
+        """
         note = Note(self.timbre, self.bpm, self.sample_rate, note_name, beat_time, volume, len(self.notes))
         self.note_names.append(note_name)
         self.beat_times.append(beat_time)
@@ -96,7 +131,15 @@ class NoteBlock:
         return True
 
     def remove_note(self, note_id: int) -> bool:
-        """删除音符"""
+        """
+        根据索引删除一个音符。
+
+        Args:
+            note_id (int): 要删除的音符编号。
+
+        Returns:
+            bool: 删除成功返回 True，失败返回 False。
+        """
         if note_id < 0 or note_id >= len(self.notes):
             return False
         del self.notes[note_id]

@@ -3,7 +3,18 @@ import numpy as np
 from src.timbre.adsr import apply_adsr
 
 def flute(freq, duration, sample_rate, volume):
-    """长笛音色"""
+    """
+    长笛音色
+
+    Args:
+        freq (float): 频率
+        duration (float): 时值，表示单音的持续时间
+        sample_rate (float): 采样率
+        volume (float): 音量大小，0~1的范围
+    
+    Returns:
+        waveform (np.ndarray): 合成长笛音色后的波形
+    """
     if duration == 0:
         return np.zeros(0)
 

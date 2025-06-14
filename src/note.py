@@ -13,11 +13,27 @@ from src.timbre.piccolo import piccolo
 from src.timbre.voice_w import voice_w
 
 class Note:
-    """音符类"""
+    """音符类。
+
+    用于表示单个音符的信息及行为，包括音符名称、节拍、音量、时长、频率计算、波形生成及可视化。
+    支持多种音色（timbre），如钢琴、小提琴等，也支持休止符（rest）。
+    """
 
     def __init__(self, timbre: str = "piano", bpm: int = 120, sample_rate: int = 44100,
                  note_name: str = "C4", beat_time: float = 1.0, volume: float = 1.0,
                  note_id: int = 0):
+        """
+        初始化 Note 对象。
+
+        Args:
+            timbre (str): 音色名称，例如 'piano'、'violin'。
+            bpm (int): 每分钟节拍数（Beats Per Minute）。
+            sample_rate (int): 采样率（Hz）。
+            note_name (str): 音符名称（如 "C4"，"D#5"，或 "rest" 表示休止符）。
+            beat_time (float): 持续的节拍数。
+            volume (float): 音量（0.0 ~ 1.0）。
+            note_id (int): 音符编号。
+        """
         #修改初始化方式，note_name输入格式为:音名(C,C#,Db...B)+数字(0~8)/rest(休止符)
         #in接口
         self.note_id = note_id
@@ -33,7 +49,15 @@ class Note:
         self.waveform = None  # ndarray
 
     def note_midi(self):
-        """用以量化音符的音高方便比较"""
+        """
+        将当前音符转换为 MIDI 音高编号，方便进行音高比较。
+
+        Returns:
+            int: MIDI 音高编号。
+
+        Raises:
+            ValueError: 如果音符是 rest 或格式非法。
+        """
         if self.note_name.lower() == 'rest':
             raise ValueError("Cannot compare rest note.")
         note_map = {'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4, 'F': 5,
@@ -46,18 +70,38 @@ class Note:
 
     def __lt__(self, other):
         """
+        判断当前音高是否小于另一个音符
         比较两个音高的大小(禁止与休止符比较)
         """
         return self.note_midi()<other.note_midi()
 
     def __gt__(self, other):
+        """
+        判断当前音高是否大于另一个音符
+        比较两个音高的大小(禁止与休止符比较)
+        """
         return self.note_midi()>other.note_midi()
 
     def __eq__(self, other):
+        """
+        判断当前音高是否等于另一个音符
+        比较两个音高的大小(禁止与休止符比较)
+        """
         return self.note_midi()==other.note_midi()
 
     def note2freq(self, note):
-        """音符转频率,note格式为C4"""
+        """
+        将音符名称转换为频率（Hz）。
+
+        Args:
+            note (str): 音符名称，如 "A4"、"C#5"、"rest"。
+
+        Returns:
+            float: 音符对应频率，单位 Hz。若为休止符返回 0。
+
+        Raises:
+            ValueError: 如果音符格式无效。
+        """
         # C,C#,D,D#,E,F,F#,G,G#,A,A#,B
         if note=="rest":
             return 0
@@ -72,7 +116,15 @@ class Note:
         raise ValueError("Invalid note format")
 
     def generate_waveform(self) -> np.ndarray:
-        """产生波形数据"""
+        """
+        生成该音符对应的音频波形。
+
+        Returns:
+            np.ndarray: 波形数据。
+
+        Raises:
+            ValueError: 若音色（timbre）不支持。
+        """
         freq=self.note2freq(self.note_name)
         if freq==0 or self.duration <= 0:
             self.waveform = np.zeros(int(self.sample_rate * self.duration))
@@ -100,7 +152,9 @@ class Note:
         return self.waveform
 
     def show_time_and_freq_domain(self):
-        """绘制时域频域特性"""
+        """
+        显示该音符的时域与频域图像。
+        """
         t = np.linspace(0, self.duration, len(self.waveform), endpoint=False)
 
         # -------- 时域图 --------

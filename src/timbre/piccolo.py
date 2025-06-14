@@ -3,7 +3,18 @@ import numpy as np
 from src.timbre.adsr import apply_adsr
 
 def piccolo(freq, duration, sample_rate, volume):
-    """短笛音色"""
+    """
+    短笛音色
+
+    Args:
+        freq (float): 频率
+        duration (float): 时值，表示单音的持续时间
+        sample_rate (float): 采样率
+        volume (float): 音量大小，0~1的范围
+    
+    Returns:
+        waveform (np.ndarray): 合成短笛音色后的波形
+    """
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
 
     # Vibrato 参数
