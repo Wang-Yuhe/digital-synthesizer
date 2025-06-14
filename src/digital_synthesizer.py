@@ -112,15 +112,12 @@ class DigitalSynthesizer:
         sd.play(self.waveform, samplerate=self.sample_rate)
         sd.wait()
 
-    def save_to_file(self, filename: str) -> bool:
+    def save_to_file(self, filename: str) -> None:
         """
         将当前音频波形保存为 WAV 文件。
 
         Args:
             filename (str): 文件名（不带扩展名）。
-
-        Returns:
-            bool: 保存成功返回 True。
         """
         wavfile.write(filename+'.wav', self.sample_rate, self.waveform.astype(np.float32))
 
