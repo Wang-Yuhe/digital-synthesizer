@@ -1,0 +1,24 @@
+/* 控制按钮样式简洁 */
+.control-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    margin-right: 8px;
+}
+.control-btn:hover {
+    color: #0d6efd;
+}
+
+/* 轨道面板宽度 */
+.track-panel {
+    width: 250px;
+}
+
+/* 侧边栏基础样式 */
+.sidebar {
+    background-color: #1e1e1e;
+    padding: 15px;
+    height: 100vh;
+    overflow-y: auto;
+}
