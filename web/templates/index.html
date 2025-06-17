@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <title>网页数字音频工作站（DAW）</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入本地CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+</head>
+<body>
+<div class="d-flex">
+
+    <!-- 左侧轨道面板 -->
+    <div class="sidebar track-panel d-flex flex-column">
+        <h5>声轨 1</h5>
+        <div class="d-flex align-items-center mb-3">
+            <button class="control-btn" title="静音">M</button>
+            <button class="control-btn" title="独奏">S</button>
+            <button class="control-btn" title="录音"><i class="bi bi-mic-fill"></i>🎤</button>
+            <button class="control-btn" title="钢琴卷轴">🎹</button>
+        </div>
+        <button id="add-track-btn" class="btn btn-outline-primary btn-sm mb-3">+ 添加声轨</button>
+        <label for="volume-control" class="form-label">主声轨音量</label>
+        <input type="range" id="volume-control" min="0" max="100" value="80" class="form-range">
+    </div>
+
+    <!-- 中间主工作区 -->
+    <div class="main-workspace d-flex flex-column">
+        <div class="playback-bar">
+            <div>当前时间：<span id="current-time">0:00:00.00</span></div>
+            <div>节拍速度：<strong>120 bpm</strong></div>
+            <div>拍号：<strong>4/4</strong></div>
+            <button id="play-btn" class="btn btn-sm btn-success">播放</button>
+            <button class="btn btn-sm btn-secondary">暂停</button>
+            <button class="btn btn-sm btn-danger">停止</button>
+        </div>
+
+        <div class="timeline">
+            <!-- 时间线1-9小节 -->
+            {% for i in range(1,10) %}
+            <div>第{{i}}小节</div>
+            {% endfor %}
+        </div>
+
+        <!-- note_blocks 列表渲染区 -->
+        <div id="note-block-container">
+            {% if note_blocks and note_blocks|length > 0 %}
+            <div class="note-block-list">
+                {% for nb in note_blocks %}
+                <div class="note-block-item">
+                    <!-- 你可以根据 NoteBlock 类添加更详细的显示内容 -->
+                    乐段 #{{ loop.index }}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-segment-placeholder">
+                在这里添加循环乐段或双击创建片段
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 右侧素材库面板 -->
+    <div class="sidebar material-library" style="width: 280px;">
+        <h5>音频素材库</h5>
+        <input type="text" class="search-input" placeholder="搜索素材...">
+        <div>
+            {% for category in categories %}
+            <div class="folder" onclick="toggleFolder(this)">{{category}}</div>
+            <div class="folder-content" style="display:none;">
+                <!-- 这里可动态渲染素材文件 -->
+                <div>示例素材1.wav</div>
+                <div>示例素材2.wav</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<!-- 底部设备链面板 -->
+<div class="device-chain d-flex align-items-center justify-content-between px-3">
+    <div>
+        <h6>音乐设备链 - 声轨 1</h6>
+        <div>设备模块: <strong>VOLT Mini</strong> + 音色: <em>Ambient Keys</em></div>
+    </div>
+    <div>
+        <button class="btn btn-outline-light btn-sm me-2">编辑</button>
+        <button class="btn btn-outline-light btn-sm">添加设备</button>
+    </div>
+</div>
+
+<!-- 引入本地JS -->
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>
