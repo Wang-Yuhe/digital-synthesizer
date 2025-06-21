@@ -1,18 +1,36 @@
-<div class="sidebar track-panel d-flex flex-column" style="width:250px; background:#1e1e1e; padding:15px; height:100vh; overflow-y:auto;">
-    <h5>声轨 1</h5>
-    <div class="d-flex align-items-center mb-3">
-        <button class="control-btn" title="静音">M</button>
-        <button class="control-btn" title="独奏">S</button>
-        <button class="control-btn" title="录音">🎤</button>
-        <button class="control-btn" title="钢琴卷轴">🎹</button>
-    </div>
-    <button id="add-track-btn" class="btn btn-outline-primary btn-sm mb-3">+ 添加声轨</button>
-    <label for="volume-control" class="form-label">主声轨音量</label>
-    <input type="range" id="volume-control" min="0" max="100" value="80" class="form-range">
+<!-- 中间主工作区 -->
+    <div class="main-workspace d-flex flex-column">
+        <div class="playback-bar">
+            <div>当前时间：<span id="current-time">0:00:00.00</span></div>
+            <div>节拍速度：<strong>120 bpm</strong></div>
+            <div>拍号：<strong>4/4</strong></div>
+            <button id="play-btn" class="btn btn-sm btn-success">播放</button>
+            <button class="btn btn-sm btn-secondary">暂停</button>
+            <button class="btn btn-sm btn-danger">停止</button>
+        </div>
 
-    <div id="note-block-container" style="margin-top:20px; color:#ddd;">
-        <div class="empty-segment-placeholder">
-            在这里添加循环乐段或双击创建片段
+        <div class="timeline">
+            <!-- 时间线1-9小节 -->
+            {% for i in range(1,10) %}
+            <div>第{{i}}小节</div>
+            {% endfor %}
+        </div>
+
+        <!-- note_blocks 列表渲染区 -->
+        <div id="note-block-container">
+            {% if note_blocks and note_blocks|length > 0 %}
+            <div class="note-block-list">
+                {% for nb in note_blocks %}
+                <div class="note-block-item">
+                    <!-- 你可以根据 NoteBlock 类添加更详细的显示内容 -->
+                    乐段 #{{ loop.index }}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-segment-placeholder">
+                在这里添加循环乐段或双击创建片段
+            </div>
+            {% endif %}
         </div>
     </div>
-</div>

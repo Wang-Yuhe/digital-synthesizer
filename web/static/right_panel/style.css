@@ -1,0 +1,34 @@
+/* 右侧素材库面板 */
+.material-library {
+    background-color: #1e1e1e;
+    padding: 15px;
+    height: 100vh;
+    overflow-y: auto;
+}
+.search-input {
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 5px;
+    border-radius: 4px;
+    border: none;
+}
+.folder {
+    cursor: pointer;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.folder:hover {
+    color: #0d6efd;
+}
+.folder-content {
+    margin-left: 15px;
+    margin-bottom: 15px;
+}
+.material-item {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}

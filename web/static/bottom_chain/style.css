@@ -1,0 +1,7 @@
+/* 底部设备链面板 */
+.device-chain {
+    height: 15vh;                /* 视口的 15%，接近原 150px 效果 */
+    background-color: #2a2a2a;
+    padding: 1vh;                /* 自适应内边距 */
+    width: 100%;
+}

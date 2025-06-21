@@ -1,0 +1,90 @@
+/* 左侧轨道面板整体 */
+.sidebar, .track-panel {
+    background-color: #1e1e1e;
+    padding: 20px 14px 0 14px;
+    height: 100vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    width: 220px;  /* 原来是270px，缩小了 */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.track-title {
+    font-size: 1.1rem;  /* 原来是1.4rem */
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #fff;
+    letter-spacing: 0.8px;
+}
+
+.track-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;  /* 原来是14px */
+    margin-bottom: 16px;
+}
+
+.control-btn {
+    background: #232323;
+    border: none;
+    color: #bbb;
+    font-size: 1rem;  /* 原来是1.1rem */
+    border-radius: 5px;  /* 原来是6px */
+    padding: 6px 10px;  /* 原来是7px 14px */
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.1s;
+}
+
+.control-btn:hover {
+    background: #0d6efd;
+    color: #fff;
+    transform: translateY(-1.5px) scale(1.05);  /* 稍微减弱效果 */
+}
+
+.add-track-btn {
+    width: 100%;
+    padding: 10px 0;  /* 原来是12px */
+    background: linear-gradient(90deg, #0d6efd 60%, #38b6ff 100%);
+    border: none;
+    color: #fff;
+    border-radius: 6px;  /* 原来是8px */
+    font-size: 1rem;  /* 原来是1.1rem */
+    font-weight: bold;
+    cursor: pointer;
+    margin: 14px 0 24px 0;  /* 缩小垂直间距 */
+    box-shadow: 0 1px 6px #0002;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.8px;
+}
+
+.add-track-btn:hover {
+    background: linear-gradient(90deg, #38b6ff 0%, #0d6efd 100%);
+    transform: translateY(-1.5px) scale(1.02);
+    box-shadow: 0 3px 12px #0d6efd33;
+}
+
+.volume-section {
+    margin-top: 8px;  /* 原来是10px */
+}
+
+.volume-label {
+    font-size: 0.95rem;  /* 原来是1.05rem */
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+    color: #eee;
+}
+
+.volume-range {
+    width: 100%;
+    accent-color: #0d6efd;
+    margin-bottom: 8px;
+}
+
+/* 左右面板宽度 */
+.left-panel, .right-panel {
+    width: 220px;  /* 原来是250px */
+    background: #1e1e1e;
+}

@@ -1,0 +1,123 @@
+/* 中间主工作区 */
+.main-workspace {
+    flex-grow: 1;
+    padding: 12px 8px 0 8px;    /* 从16/12px -> 12/8px */
+    background: #232323;
+    min-height: unset;
+    box-sizing: border-box;
+    font-size: 0.92rem;         /* 从0.98rem -> 0.92rem */
+}
+
+/* 播放控制栏 */
+.playback-bar {
+    display: flex;
+    align-items: center;
+    gap: 20px;                  /* 从28px -> 20px */
+    margin-bottom: 16px;        /* 从22px -> 16px */
+    font-size: 1.05rem;         /* 从1.15rem -> 1.05rem */
+}
+.playback-bar > div {
+    color: #eee;
+}
+.playback-bar strong {
+    color: #0d6efd;
+    font-weight: bold;
+    font-size: 1.08rem;         /* 从1.18rem -> 1.08rem */
+}
+.playback-bar button {
+    padding: 6px 18px;          /* 从7/22px -> 6/18px */
+    border: none;
+    border-radius: 7px;
+    font-size: 0.95rem;         /* 从1rem -> 0.95rem */
+    font-weight: 600;
+    margin-left: 6px;           /* 从8px -> 6px */
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 2px 8px #0002;
+}
+
+/* 时间线 */
+.timeline {
+    display: flex;
+    gap: 20px;                  /* 从28px -> 20px */
+    margin-bottom: 14px;        /* 从18px -> 14px */
+    user-select: none;
+    color: #bbb;
+    font-weight: 600;
+    font-size: 1.05rem;         /* 从1.13rem -> 1.05rem */
+    letter-spacing: 1px;
+}
+
+/* 乐段列表 */
+.note-block-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;                  /* 从14px -> 10px */
+    margin-bottom: 14px;        /* 从18px -> 14px */
+}
+.note-block-item {
+    padding: 10px 14px;         /* 从14/18px -> 10/14px */
+    background-color: #232323;
+    border-radius: 8px;
+    color: #eee;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    border: 1.5px solid transparent;
+    font-size: 1.05rem;         /* 从1.13rem -> 1.05rem */
+    box-shadow: 0 2px 8px #0001;
+}
+.note-block-item:hover,
+.note-block-item.selected {
+    background-color: #0d6efd;
+    color: #fff;
+    border-color: #0d6efd;
+}
+
+/* 空白片段占位符 */
+.empty-segment-placeholder {
+    flex-grow: 1;
+    border: 2px dashed #444;
+    border-radius: 8px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;         /* 从1.13rem -> 1.05rem */
+    user-select: none;
+    min-height: 40px;           /* 从48px -> 40px */
+    background: #232323;
+    margin-top: 10px;           /* 从12px -> 10px */
+}
+
+/* 播放按钮 — 绿色 */
+.playback-bar .btn-success {
+    background: #28a745;                 /* 主色调 */
+    color: #fff;
+    background-image: none;             /* 取消渐变，保持纯色 */
+}
+.playback-bar .btn-success:hover {
+    background: #218838;                 /* 深一度的绿色 */
+    transform: translateY(-2px) scale(1.05);
+}
+
+/* 暂停按钮 — 黄色 */
+.playback-bar .btn-secondary {
+    background: #ffc107;                 /* 主色调 */
+    color: #212529;                      /* 深色文字，增强对比 */
+}
+.playback-bar .btn-secondary:hover {
+    background: #e0a800;                 /* 深一度的黄色 */
+    transform: translateY(-2px) scale(1.05);
+}
+
+/* 停止按钮 — 红色 */
+.playback-bar .btn-danger {
+    background: #dc3545;                 /* 主色调 */
+    color: #fff;
+    background-image: none;             /* 取消渐变，保持纯色 */
+}
+.playback-bar .btn-danger:hover {
+    background: #c82333;                 /* 深一度的红色 */
+    transform: translateY(-2px) scale(1.05);
+}

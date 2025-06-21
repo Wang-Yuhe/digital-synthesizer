@@ -1,18 +1,15 @@
-<div class="sidebar track-panel d-flex flex-column" style="width:250px; background:#1e1e1e; padding:15px; height:100vh; overflow-y:auto;">
-    <h5>声轨 1</h5>
-    <div class="d-flex align-items-center mb-3">
-        <button class="control-btn" title="静音">M</button>
-        <button class="control-btn" title="独奏">S</button>
-        <button class="control-btn" title="录音">🎤</button>
-        <button class="control-btn" title="钢琴卷轴">🎹</button>
-    </div>
-    <button id="add-track-btn" class="btn btn-outline-primary btn-sm mb-3">+ 添加声轨</button>
-    <label for="volume-control" class="form-label">主声轨音量</label>
-    <input type="range" id="volume-control" min="0" max="100" value="80" class="form-range">
-
-    <div id="note-block-container" style="margin-top:20px; color:#ddd;">
-        <div class="empty-segment-placeholder">
-            在这里添加循环乐段或双击创建片段
+<!-- 左侧轨道面板 -->
+    <div class="sidebar track-panel">
+        <h2 class="track-title">声轨 1</h2>
+        <div class="track-controls">
+            <button class="control-btn" title="静音">M</button>
+            <button class="control-btn" title="独奏">S</button>
+            <button class="control-btn" title="录音">🎤</button>
+            <button class="control-btn" title="钢琴卷轴">🎹</button>
+        </div>
+        <button id="add-track-btn" class="add-track-btn">+ 添加声轨</button>
+        <div class="volume-section">
+            <label for="volume-control" class="volume-label">主声轨音量</label>
+            <input type="range" id="volume-control" min="0" max="100" value="80" class="volume-range">
         </div>
     </div>
-</div>

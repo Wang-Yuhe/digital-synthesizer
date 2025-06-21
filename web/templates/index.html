@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>数字合成器</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='left_panel/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='center_workspace/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='right_panel/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bottom_chain/style.css') }}">
     <style>
         body { margin: 0; background: #181818; color: #eee; font-family: "Microsoft YaHei", Arial, sans-serif; }
         .main-layout { display: flex; height: 92vh; }
         .left-panel, .right-panel { width: 250px; background: #1e1e1e; }
         .center-workspace { flex: 1; background: #232323; padding: 20px; overflow-y: auto; }
-        .bottom-chain { width: 100%; background: #222; height: 8vh; }
+        .bottom-chain { width: 100%; background: #222; height: 6vh;}
     </style>
 </head>
 <body>
@@ -31,6 +35,10 @@
     <div class="bottom-chain">
         {% include 'components/bottom_chain/index.html' %}
     </div>
-    <script src="/static/index.js"></script>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+    <script src="{{ url_for('static', filename='left_panel/index.js') }}"></script>
+    <script src="{{ url_for('static', filename='center_workspace/index.js') }}"></script>
+    <script src="{{ url_for('static', filename='right_panel/index.js') }}"></script>
+    <script src="{{ url_for('static', filename='bottom_chain/index.js') }}"></script>
 </body>
 </html>

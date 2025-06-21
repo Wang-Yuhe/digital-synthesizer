@@ -1,4 +1,4 @@
-// 添加声轨按钮事件
+/*
 document.getElementById('add-track-btn').addEventListener('click', () => {
     fetch('/add_track', { method: 'POST' })
         .then(res => res.json())
@@ -12,3 +12,4 @@ document.getElementById('add-track-btn').addEventListener('click', () => {
             alert('调用失败');
         });
 });
+*/
