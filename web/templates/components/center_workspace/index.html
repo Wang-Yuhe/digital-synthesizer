@@ -9,28 +9,55 @@
             <button class="btn btn-sm btn-danger">停止</button>
         </div>
 
-        <div class="timeline">
-            <!-- 时间线1-9小节 -->
-            {% for i in range(1,10) %}
-            <div>第{{i}}小节</div>
-            {% endfor %}
-        </div>
-
-        <!-- note_blocks 列表渲染区 -->
-        <div id="note-block-container">
-            {% if note_blocks and note_blocks|length > 0 %}
-            <div class="note-block-list">
-                {% for nb in note_blocks %}
-                <div class="note-block-item">
-                    <!-- 你可以根据 NoteBlock 类添加更详细的显示内容 -->
-                    乐段 #{{ loop.index }}
+        <!-- 横向滚动容器 -->
+        <div class="edit-area-scroll">
+            <div class="edit-area-content" id="edit-area-content">
+                <div class="timeline-scroll-wrapper">
+                    <div class="timeline" id="timeline-bar">
+                        <!-- 时间线小节由JS动态渲染 -->
+                    </div>
                 </div>
-                {% endfor %}
+                <div class="timeline-control">
+                    <label for="bar-count-range" style="margin-right:8px;">小节数：</label>
+                    <input type="range" id="bar-count-range" min="1" max="32" value="9" style="vertical-align:middle;">
+                    <span id="bar-count-value">9</span>
+                </div>
+                <!-- note_blocks 列表渲染区 -->
+                <div id="note-block-container">
+                    {% if note_blocks and note_blocks|length > 0 %}
+                    <div class="note-block-list">
+                        {% for nb in note_blocks %}
+                        <div class="note-block-item">
+                            乐段 #{{ loop.index }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-segment-placeholder">
+                        在这里添加循环乐段或双击创建片段
+                    </div>
+                    {% endif %}
+                </div>
             </div>
-            {% else %}
-            <div class="empty-segment-placeholder">
-                在这里添加循环乐段或双击创建片段
-            </div>
-            {% endif %}
         </div>
     </div>
+
+    <!-- 乐段编辑弹窗 -->
+<div id="note-block-modal" class="note-block-modal" style="display:none;">
+    <div class="note-block-modal-content">
+        <div class="modal-header">
+            <span id="modal-title">乐段编辑</span>
+            <button id="close-modal-btn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-bpm">
+                <label for="modal-bpm-input">BPM：</label>
+                <input type="number" id="modal-bpm-input" min="40" max="240" value="120" style="width:60px;">
+            </div>
+            <div id="piano-roll-container"></div>
+        </div>
+        <div class="modal-footer">
+            <button id="save-note-block-btn" class="btn btn-success">保存</button>
+        </div>
+    </div>
+</div>

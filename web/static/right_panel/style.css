@@ -3,7 +3,7 @@
     background-color: #1e1e1e;
     padding: 15px;
     height: 100vh;
-    overflow-y: auto;
+    overflow-y: hidden;
 }
 .search-input {
     margin-bottom: 10px;

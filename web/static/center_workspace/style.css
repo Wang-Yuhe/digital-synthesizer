@@ -8,6 +8,60 @@
     font-size: 0.92rem;         /* 从0.98rem -> 0.92rem */
 }
 
+/* 时间线滚动容器 */
+.timeline-scroll-wrapper {
+    overflow-x: auto;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #333;
+    /* 保证高度不会因内容撑开 */
+    height: 38px;
+}
+.timeline {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 4px;
+    font-size: 1rem;
+    color: #bbb;
+    font-weight: 600;
+    user-select: none;
+    align-items: center;
+}
+
+/* 新增：每个小节固定宽度和居中显示 */
+.timeline > div {
+    min-width: 70px;
+    max-width: 70px;
+    text-align: center;
+    padding: 4px 0;
+    background: #232323;
+    border-radius: 6px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+.timeline > div:hover {
+    background: #2d2d2d;
+}
+
+.timeline-control {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.98rem;
+}
+#bar-count-range {
+    width: 160px;
+    margin: 0 8px;
+    accent-color: #0d6efd;
+}
+#bar-count-value {
+    min-width: 24px;
+    display: inline-block;
+    text-align: left;
+    color: #0d6efd;
+    font-weight: bold;
+}
+
 /* 播放控制栏 */
 .playback-bar {
     display: flex;
@@ -36,18 +90,6 @@
     box-shadow: 0 2px 8px #0002;
 }
 
-/* 时间线 */
-.timeline {
-    display: flex;
-    gap: 20px;                  /* 从28px -> 20px */
-    margin-bottom: 14px;        /* 从18px -> 14px */
-    user-select: none;
-    color: #bbb;
-    font-weight: 600;
-    font-size: 1.05rem;         /* 从1.13rem -> 1.05rem */
-    letter-spacing: 1px;
-}
-
 /* 乐段列表 */
 .note-block-list {
     display: flex;
@@ -63,9 +105,10 @@
     cursor: pointer;
     user-select: none;
     transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-    border: 1.5px solid transparent;
+    border: 2px solid #555; /* 新增边框 */
     font-size: 1.05rem;         /* 从1.13rem -> 1.05rem */
     box-shadow: 0 2px 8px #0001;
+    margin-bottom: 8px;
 }
 .note-block-item:hover,
 .note-block-item.selected {
@@ -121,3 +164,38 @@
     background: #c82333;                 /* 深一度的红色 */
     transform: translateY(-2px) scale(1.05);
 }
+
+/* 编辑区域 */
+.edit-area-scroll {
+    overflow-x: auto;
+    width: 100%;
+    /* 高度自适应 */
+}
+.edit-area-content {
+    min-width: 100%;
+    /* 宽度由JS动态设置 */
+    transition: width 0.2s;
+}
+
+/* 保证时间线、乐段等宽度一致对齐 */
+.timeline, .note-block-list {
+    /* 不再用min-width:100%，由父容器控制 */
+}
+
+/* 弹窗样式 */
+.note-block-modal {
+    position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;
+}
+.note-block-modal-content {
+    background: #232323; border-radius: 10px; padding: 24px 28px; min-width: 900px; min-height: 500px;
+    box-shadow: 0 8px 32px #0008; position: relative;
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.close-btn { background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }
+.modal-bpm { margin-bottom: 16px; }
+#piano-roll-container { background: #444; border-radius: 6px; overflow-x: auto; }
+.piano-roll-table { border-collapse: collapse; width: auto; }
+.piano-roll-table td { border: 1px solid #888; width: 70px; height: 28px; background: #666; }
+.piano-roll-table .pitch-label { background: #333; color: #fff; width: 32px; text-align: center; }
+.piano-roll-table .piano-cell.active { background: #4fc3f7; }
