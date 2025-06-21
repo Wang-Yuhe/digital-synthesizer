@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>数字合成器</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body { margin: 0; background: #181818; color: #eee; font-family: "Microsoft YaHei", Arial, sans-serif; }
+        .main-layout { display: flex; height: 92vh; }
+        .left-panel, .right-panel { width: 250px; background: #1e1e1e; }
+        .center-workspace { flex: 1; background: #232323; padding: 20px; overflow-y: auto; }
+        .bottom-chain { width: 100%; background: #222; height: 8vh; }
+    </style>
+</head>
+<body>
+    <div class="main-layout">
+        <!-- 左侧面板 -->
+        <div class="left-panel">
+            {% include 'components/left_panel/index.html' %}
+        </div>
+        <!-- 中央工作区 -->
+        <div class="center-workspace">
+            {% include 'components/center_workspace/index.html' %}
+        </div>
+        <!-- 右侧面板 -->
+        <div class="right-panel">
+            {% include 'components/right_panel/index.html' %}
+        </div>
+    </div>
+    <!-- 底部链 -->
+    <div class="bottom-chain">
+        {% include 'components/bottom_chain/index.html' %}
+    </div>
+    <script src="/static/index.js"></script>
+</body>
+</html>
