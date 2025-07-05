@@ -75,12 +75,13 @@ def note_edit():
     pitch = data.get('pitch')
     bar_idx = data.get('barIdx')
     length = data.get('length')
+    block_index = data.get('block_index')
     # bar_idx 0开始的
     if state==1:
-        print(f"收到音符块: pitch={pitch}, barIdx={bar_idx}, length={length}")
+        print(f"收到音符块: pitch={pitch}, barIdx={bar_idx}, length={length}, blockIndex={block_index}")
     else:
-        print(f"删除音符块: pitch={pitch}, barIdx={bar_idx}, length={length}")  
-    # 示例：返回状态
+        print(f"删除音符块: pitch={pitch}, barIdx={bar_idx}, length={length}, blockIndex={block_index}")  
+    
     return jsonify({"status": "success", "message": "Note block received", "data": data})
 
 if __name__ == '__main__':

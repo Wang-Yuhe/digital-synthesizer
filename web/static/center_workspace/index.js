@@ -121,7 +121,7 @@ function openNoteBlockEditor(blockIndex) {
 function showNoteBlockModal(blockIndex) {
     const modal = document.getElementById('note-block-modal');
     modal.style.display = 'flex';
-    document.getElementById('modal-title').textContent = `乐段 #${blockIndex} 编辑`;
+    document.getElementById('modal-title').textContent = `乐段 ${blockIndex} 编辑`;
 
     // 获取当前小节数（从主页面滑块获取）
     const barCount = parseInt(document.getElementById('bar-count-range').value, 10) || 8;
@@ -130,7 +130,7 @@ function showNoteBlockModal(blockIndex) {
     //document.getElementById('modal-bpm-input').value = bpm;
 
     // 渲染卷帘格子
-    renderPianoRoll({ bar_count: barCount });
+    renderPianoRoll({ bar_count: barCount , block_index: blockIndex});
 }
 
 // 关闭弹窗
@@ -245,6 +245,7 @@ function renderPianoRoll(data) {
                         barIdx: dragStartIdx,
                         length: clear_len,
                         state: 0,
+                        block_index: data.block_index,
                     })
                 });
             }
@@ -282,6 +283,7 @@ function renderPianoRoll(data) {
                         barIdx: start,
                         length: length,
                         state: 1, // state=1表示新增/调整
+                        block_index: data.block_index,
                     })
                 })
                 .then(res => {
