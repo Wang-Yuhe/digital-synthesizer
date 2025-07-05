@@ -197,7 +197,7 @@ function saveNoteBlock() {
     })
     .then(res => res.json())
     .then(data => {
-        alert('保存成功！');
+        //alert('保存成功！');
         // 可选：关闭弹窗、刷新乐段等
         //document.getElementById('note-block-modal').style.display = 'none';
     })
@@ -218,6 +218,28 @@ function startModalPlayback() {
     playBlockIndex = parseInt(document.getElementById('modal-title').textContent.replace(/\D/g, ''), 10);
 
     saveNoteBlock();
+    // 发送开始播放请求（携带位置、乐段、BPM）
+    fetch('/start_playback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            block_index: playBlockIndex,  // 当前编辑的乐段编号
+            start_col: playCol,           // 当前播放起始列（位置）
+            bpm: playBpm                  // 当前BPM
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status !== 'success') {
+            alert(`开始播放失败：${data.message}`);
+            stopModalPlayback();
+        }
+    })
+    .catch(err => {
+        console.error('开始播放请求失败:', err);
+        stopModalPlayback();
+    });
+
     // 计算每格的间隔（16分音符，BPM=120时每格=0.125s）
     const interval = 60 / playBpm; //1格=1拍
 
@@ -240,6 +262,21 @@ function pauseModalPlayback() {
     isPaused = true;
     document.getElementById('modal-playback-status').textContent = '已暂停';
     if (playTimer) clearTimeout(playTimer);
+
+    // 发送暂停请求
+    fetch('/pause_playback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status !== 'success') {
+            alert(`暂停失败：${data.message}`);
+        }
+    })
+    .catch(err => {
+        console.error('暂停请求失败:', err);
+    });
 }
 
 function stopModalPlayback() {

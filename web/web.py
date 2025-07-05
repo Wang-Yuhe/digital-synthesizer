@@ -147,5 +147,58 @@ def get_note_block_details():
         "bpm": track.bpm                # 同步保存的BPM
     })
 
+current_playback = None
+
+@app.route('/start_playback', methods=['POST'])
+def start_playback():
+    global current_playback, current_nb
+    data = request.get_json()
+    block_index = data.get('block_index')
+    start_col = data.get('start_col')
+    bpm = data.get('bpm')
+    #print(f"{start_col}")
+
+    # 校验乐段编号
+    if block_index is None or block_index < 1 or block_index > len(note_blocks):
+        return jsonify({"status": "error", "message": "无效的乐段编号"}), 400
+
+    # 获取目标乐段
+    current_nb = note_blocks[block_index - 1]
+    #current_nb.bpm = bpm  # 更新乐段BPM（可选）
+    note_name=[]
+    beat_times=[]
+    start_beat=[]
+    volume=[]
+    for i in current_nb.note_savers:
+        if i.bar_idx<start_col:continue
+        note_name.append(i.note_name)
+        beat_times.append(i.length)
+        start_beat.append(i.bar_idx)
+        volume.append(i.volume)
+
+    #print(current_nb.bpm)
+    newblock = NoteBlock(timbre=current_nb.timbre, bpm=current_nb.bpm,
+                          note_names=note_name, beat_times=beat_times,
+                          start_beat=start_beat, volume=volume)
+
+    # 生成从start_col开始的音频数据（需根据业务逻辑实现）
+    waveform = newblock.generate_waveform()
+
+    # 停止之前的播放（如果有）
+    if current_playback is not None:
+        current_playback.stop()
+
+    # 开始新的播放
+    current_playback = sd.play(waveform, samplerate=newblock.sample_rate)
+    return jsonify({"status": "success", "message": "开始播放"})
+
+@app.route('/pause_playback', methods=['POST'])
+def pause_playback():
+    global current_playback
+    if current_playback is not None:
+        current_playback.stop()  # 停止当前播放
+        current_playback = None
+    return jsonify({"status": "success", "message": "已暂停播放"})
+
 if __name__ == '__main__':
     app.run(debug=True)
