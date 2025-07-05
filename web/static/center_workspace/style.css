@@ -195,103 +195,249 @@
 .close-btn { background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }
 .modal-bpm { margin-bottom: 16px; }
 
-/*钢琴卷帘设置*/
+/* 钢琴卷帘 - 结构与滚动适配 */
 .piano-roll-outer {
     display: flex;
+    flex-direction: column;
     height: 400px;
     background: #444;
     position: relative;
+    overflow: hidden;
 }
-.piano-roll-pitches {
-    width: 48px;
-    min-width: 48px;
-    background: #333;
-    color: #fff;
+
+/* 顶部时间轴对齐部分 */
+.piano-roll-header {
     display: flex;
-    flex-direction: column;
+    height: 30px; /* demo为40px，这里用30px更紧凑 */
+    width: 100%;
+    background: #333;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+.piano-roll-header-left {
+    height: 30px;
+    width: 60px;      /* demo为60px */
+    min-width: 60px;
+    background: #222;
+    color: #444;
+    display: flex;
     align-items: center;
+    justify-content: center;
     position: sticky;
     left: 0;
-    top: 0;
-    z-index: 2;
-    overflow: hidden; /* 关键：无滚动条 */
-    height: 100%;
+    z-index: 4;
 }
-.piano-roll-pitch-label {
-    height: 28px;           /* 必须与格子高度一致 */
-    line-height: 28px;
-    width: 100%;
-    text-align: center;
-    font-size: 0.95em;
-    border-bottom: 1px solid #555;
-    box-sizing: border-box;
-    user-select: none;
-}
-.piano-roll-pitch-label.black-key {
-    background: #222;
-}
-.piano-roll-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    position: relative;
-}
+
+/* 时间线 */
 .piano-roll-timeline {
-    height: 24px;
-    overflow: hidden; /* 关键：无滚动条 */
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background: #222;
-}
-.piano-roll-scroll {
     flex: 1;
-    overflow: auto;
-    height: calc(100% - 24px);
-    background: #444;
+    height: 30px;
+    overflow: scroll;
+    scrollbar-width: none; 
     position: relative;
+    background: #222;
 }
 .piano-roll-timeline-table {
     border-collapse: collapse;
-    width: auto;
     table-layout: fixed;
 }
 .piano-roll-timeline-table td {
-    border: 1px solid #333;
+    border-right: 1px solid #484242;
+    text-align: center;
+    height: 30px;     /* demo为40px，这里30px */
+    width: 40px;      /* demo为40px */
     background: #222;
     color: #0d6efd;
-    text-align: center;
     font-size: 0.95em;
-    height: 24px;
-    min-width: 40px;
-    max-width: 40px;
     user-select: none;
+    padding: 0;
 }
+
+/* 主体区域 */
+.piano-roll-body {
+    display: flex;
+    flex: 1;
+    position: relative;
+    min-height: 0;
+}
+
+/* 左侧音高标签 */
+.piano-roll-pitches {
+    width: 60px;      /* demo为60px */
+    min-width: 60px;
+    background: #f0f0f0;
+    color: #222;
+    display: block;
+    position: sticky;
+    left: 0;
+    top: 30px;
+    z-index: 2;
+    overflow: hidden;
+    height: 100%;
+}
+.piano-roll-pitch-table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+}
+.piano-roll-pitch-table td {
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+    width: 60px;
+    height: 30px;
+    line-height: 30px;
+    background: #f0f0f0;
+    font-size: 0.95em;
+    user-select: none;
+    padding: 0;
+}
+.piano-roll-pitch-table tr:nth-child(odd) td {
+    background: #eaeaea;
+}
+
+/* 滚动容器 (格子区) */
+.piano-roll-container-wrapper {
+    flex: 1;
+    overflow: scroll;
+    position: relative;
+    height: 100%;
+    background: #fff;
+    /* 显示滚动条 */
+    scrollbar-color: #bbb #eee;
+    scrollbar-width: thin;
+}
+.piano-roll-container {
+    min-width: 100%;
+    min-height: 100%;
+}
+
+/* 格子区表格 */
 .piano-roll-table {
     border-collapse: collapse;
-    width: auto;
     table-layout: fixed;
+    width: max-content;
 }
 .piano-roll-table td {
-    border: 1px solid #888;
+    border: 1px solid #ddd;
     width: 40px;
-    height: 28px;
-    background: #666;
+    height: 30px;
+    background: #fff;
     padding: 0;
     position: relative;
+    transition: background 0.15s;
 }
-.piano-roll-table .piano-cell.active,
-.piano-roll-table .piano-cell.note-body {
-    background: #4fc3f7 !important;
+
+/* 美化滚动条（可选，兼容性好） */
+.piano-roll-container-wrapper::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+    background: #0c0c0c;
 }
-.piano-roll-table .piano-cell.note-head {
-    background: #2196f3 !important;
-    border-left: 3px solid #1976d2;
+.piano-roll-container-wrapper::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 6px;
 }
-.piano-roll-table .piano-cell.note-tail {
-    border-right: 3px solid #1976d2;
+.piano-roll-container-wrapper::-webkit-scrollbar-corner {
+    background: #0c0c0c;
 }
-.piano-roll-table .piano-cell.dragging {
+
+/* 保证时间轴、音高、格子区严格对齐 */
+.piano-roll-header-left,
+.piano-roll-pitch-table td {
+    width: 60px !important;
+    min-width: 60px !important;
+    max-width: 60px !important;
+    height: 35px !important;
+    min-height: 35px !important;
+    max-height: 35px !important;
+    box-sizing: border-box;
+}
+
+.piano-roll-timeline-table td,
+.piano-roll-table td {
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    height: 35px !important;
+    min-height: 35px !important;
+    max-height: 35px !important;
+    box-sizing: border-box;
+}
+
+/* 全局统一盒模型（或仅针对表格相关元素） 
+.piano-roll-timeline-table td,
+.piano-roll-table td,
+.piano-roll-header-left,
+.piano-roll-pitch-table td {
+    box-sizing: border-box;  关键：width包含边框 
+    border-collapse: collapse;
+    padding: 0;
+    margin: 0;
+}*/
+
+/* 顶部时间轴和左侧音高定位 */
+.piano-roll-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+
+.piano-roll-pitches {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+}
+
+/* 确保滚动容器的滚动行为一致 */
+.piano-roll-timeline {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.piano-roll-container-wrapper {
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+/* 高亮黑键（如需） */
+.piano-roll-pitch-label.black-key,
+.piano-roll-pitch-table .black-key {
+    background: #bbb !important;
+    color: #333;
+}
+
+/* 鼠标悬停高亮 */
+.piano-roll-table td:hover {
+    background: #dfe1e1;
+    cursor: pointer;
+}
+/* 音符样式 */
+.piano-roll-table .active,
+.piano-roll-table .note-body {
+    background: #1976d2 !important;
+}
+.piano-roll-table .note-head {
+    background: #1976d2 !important;
+    border-left: 1px solid #1976d2;
+}
+/*
+.piano-roll-table .note-tail {
+    border-right: 1px solid #1976d2;
+}*/
+.piano-roll-table .dragging {
     outline: 2px dashed #ff9800;
+}
+
+/* 钢琴卷帘格子区 - 音符块完全遮住格子线 */
+.piano-roll-table .note-body,
+.piano-roll-table .note-tail{
+    background: #1976d2 !important;
+    border-left: 2px solid #1976d2 !important;/* 让边框色和背景色一致，彻底盖住线 */
+    z-index: 2;
+    position: relative;
+    box-shadow: 0 1px 4px #0003;
+}
+.piano-roll-table .note-body {
+    border-radius: 0;
 }

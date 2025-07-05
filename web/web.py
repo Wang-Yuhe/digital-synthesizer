@@ -68,6 +68,20 @@ def play():
     else:
         return jsonify({"status": "error", "message": "No NoteBlock selected"}), 400
 
+@app.route('/note_edit', methods=['POST'])
+def note_edit():
+    data = request.get_json()
+    state = data.get('state')# 0表示删除，1表示增加
+    pitch = data.get('pitch')
+    bar_idx = data.get('barIdx')
+    length = data.get('length')
+    # bar_idx 0开始的
+    if state==1:
+        print(f"收到音符块: pitch={pitch}, barIdx={bar_idx}, length={length}")
+    else:
+        print(f"删除音符块: pitch={pitch}, barIdx={bar_idx}, length={length}")  
+    # 示例：返回状态
+    return jsonify({"status": "success", "message": "Note block received", "data": data})
 
 if __name__ == '__main__':
     app.run(debug=True)

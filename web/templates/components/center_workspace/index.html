@@ -57,10 +57,17 @@
                 <input type="number" id="modal-bpm-input" min="40" max="240" value="120" style="width:60px;">
             </div>
             <div class="piano-roll-outer">
-                <div class="piano-roll-pitches" id="piano-roll-pitches"></div>
-                <div class="piano-roll-scroll">
-                    <div id="piano-roll-timeline"></div>
-                    <div id="piano-roll-container"></div>
+                <!-- 顶部：时间刻度条 -->
+                <div class="piano-roll-header">
+                    <div class="piano-roll-header-left"></div>
+                    <div class="piano-roll-timeline" id="piano-roll-timeline"></div>
+                </div>
+                <!-- 主体区域：左侧音高 + 右侧格子 -->
+                <div class="piano-roll-body">
+                    <div class="piano-roll-pitches" id="piano-roll-pitches"></div>
+                    <div class="piano-roll-container-wrapper" id="piano-roll-scroll">
+                        <div class="piano-roll-container" id="piano-roll-container"></div>
+                    </div>
                 </div>
             </div>
         </div>

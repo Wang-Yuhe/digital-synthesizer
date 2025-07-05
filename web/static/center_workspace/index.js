@@ -156,110 +156,203 @@ function renderPianoRoll(data) {
         }
     }
 
-    // 1. 渲染左侧pitches
+    // 渲染左侧pitches (table)
     const pitchesDiv = document.getElementById('piano-roll-pitches');
-    pitchesDiv.innerHTML = '';
-    for (let i = pitches.length - 1; i >= 0; i--) {
-        const label = document.createElement('div');
-        label.className = 'piano-roll-pitch-label';
-        label.textContent = pitches[i];
-        pitchesDiv.appendChild(label);
+    let pitchTable = '<table class="piano-roll-pitch-table"><tbody>';
+    for (let i = 0; i < pitches.length; i++) {
+      pitchTable += `<tr><td>${pitches[i]}</td></tr>`;
     }
+    pitchTable += '</tbody></table>';
+    pitchesDiv.innerHTML = pitchTable;
 
-    // 2. 渲染时间轴
+    // 渲染时间轴
     const timelineDiv = document.getElementById('piano-roll-timeline');
     let timelineHtml = `<table class="piano-roll-timeline-table" style="min-width:${totalCells * cellWidth}px;"><tr>`;
     for (let i = 0; i < totalCells; i++) {
-        if (i % cellsPerBar === 0) {
-            timelineHtml += `<td colspan="${cellsPerBar}">${i/cellsPerBar+1}</td>`;
-        }
+      if (i % cellsPerBar === 0) {
+        timelineHtml += `<td colspan="${cellsPerBar}">${i/cellsPerBar+1}</td>`;
+      }
     }
     timelineHtml += '</tr></table>';
     timelineDiv.innerHTML = timelineHtml;
 
-    // 3. 渲染卷帘格子
+    // 渲染钢琴卷帘格子
     const container = document.getElementById('piano-roll-container');
-    let html = `<table class="piano-roll-table" style="min-width:${totalCells * cellWidth}px;"><tbody>`;
-    for (let p = pitches.length - 1; p >= 0; p--) {
-        html += '<tr>';
-        for (let b = 0; b < totalCells; b++) {
-            html += `<td class="piano-cell" data-pitch="${pitches[p]}" data-bar="${b}"></td>`;
+    let gridHtml = `<table class="piano-roll-table" style="min-width:${totalCells * cellWidth}px;"><tbody>`;
+    for (let r = 0; r < pitches.length; r++) {
+        gridHtml += '<tr>';
+        for (let c = 0; c < totalCells; c++) {
+            gridHtml += `<td class="piano-cell" data-pitch="${pitches[r]}" data-bar="${c}"></td>`;
         }
-        html += '</tr>';
+        gridHtml += '</tr>';
     }
-    html += '</tbody></table>';
-    container.innerHTML = html;
+    gridHtml += '</tbody></table>';
+    container.innerHTML = gridHtml;
 
-    // 4. 音符延长功能
+    // 滚动同步
+    const wrapper = document.getElementById('piano-roll-scroll');
+    wrapper.addEventListener('scroll', () => {
+        document.getElementById('piano-roll-pitches').scrollTop = wrapper.scrollTop;
+        document.getElementById('piano-roll-timeline').scrollLeft = wrapper.scrollLeft;
+    });
+
+
+    // 状态变量
     let isDragging = false;
-    let dragStartCell = null;
-    let dragRowCells = [];
     let dragStartIdx = -1;
+    let dragRowCells = [];
+    let dragRowElement = null;
 
-    // 鼠标按下：准备延长音符
+    // 工具：清除一个音符片段
+    function clearNoteSegment(rowCells, idx) {
+        let start = idx;
+        while (start > 0 && (rowCells[start].classList.contains('note-body')||rowCells[start].classList.contains('note-tail'))) start--;
+        if (!rowCells[start].classList.contains('note-head')) return;
+        let end = start;
+        while (end + 1 < rowCells.length && (rowCells[end+1].classList.contains('note-body') || rowCells[end+1].classList.contains('note-tail'))) end++;
+        for (let i = start; i <= end; i++) {
+            rowCells[i].classList.remove('note-head','note-body','note-tail');
+        }
+        return end-start+1;
+    }
+
+    // 阻止右键默认菜单
+    const wrapper_r = document.getElementById('piano-roll-scroll');
+    wrapper_r.addEventListener('contextmenu', e => e.preventDefault());
+
+    // 注册事件：添加、调整、删除
     container.querySelectorAll('.piano-cell').forEach(cell => {
-        cell.addEventListener('mousedown', function(e) {
-            if (e.button !== 0) return; // 只响应左键
-            isDragging = true;
-            dragStartCell = this;
-            const row = this.parentElement;
+        cell.addEventListener('mousedown', e => {
+            const row = cell.parentElement;
+            dragRowElement = row;
             dragRowCells = Array.from(row.querySelectorAll('.piano-cell'));
-            dragStartIdx = dragRowCells.indexOf(this);
-            // 清除本行所有note-head/note-body/note-tail
-            dragRowCells.forEach(c => c.classList.remove('note-head', 'note-body', 'note-tail'));
-            // 先激活起点
-            this.classList.add('note-head');
+            dragStartIdx = dragRowCells.indexOf(cell);
+            if (e.button === 0) {
+                // 左键：新增或开始修改
+                isDragging = true;
+                if (!cell.classList.contains('note-head')) {
+                    clearNoteSegment(dragRowCells, dragStartIdx);
+                    cell.classList.add('note-head');
+                }
+            } else if (e.button === 2) {
+                // 右键：删除整段
+                clear_len=clearNoteSegment(dragRowCells, dragStartIdx);
+                fetch('/note_edit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        pitch: dragRowCells[dragStartIdx].getAttribute('data-pitch'),
+                        barIdx: dragStartIdx,
+                        length: clear_len,
+                        state: 0,
+                    })
+                });
+            }
+        });
+
+        // 鼠标松开时，完成拖动
+        cell.addEventListener('mouseup', e => {
+            if (!isDragging) return;
+            const row = cell.parentElement;
+            const rowCells = Array.from(row.querySelectorAll('.piano-cell'));
+            const endIdx = rowCells.indexOf(cell);
+            if (endIdx > dragStartIdx) {
+                for (let i = dragStartIdx + 1; i < endIdx; i++) {
+                    rowCells[i].classList.remove('note-tail','note-body','note-head');
+                    rowCells[i].classList.add('note-body');
+                }
+                rowCells[endIdx].classList.remove('note-tail','note-body','note-head')
+                rowCells[endIdx].classList.add('note-tail');
+            }
+
+            // 拖动扩展音符长度时，直接使用dragStartIdx和endIdx计算长度
+            if (endIdx >= dragStartIdx) {
+                // 确定音符起始和结束位置
+                const start = dragStartIdx;
+                const end = endIdx;
+                const length = end - start + 1;
+                const pitch = rowCells[start].getAttribute('data-pitch');
+
+                // 发送新增/调整长度请求（添加错误处理）
+                fetch('/note_edit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        pitch: pitch,
+                        barIdx: start,
+                        length: length,
+                        state: 1, // state=1表示新增/调整
+                    })
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error(`HTTP状态码异常: ${res.status}`);
+                    return res.json();
+                })
+                .then(data => console.log('长度更新成功:', data))
+                .catch(err => console.error('长度更新失败:', err));
+            }
+
+            isDragging = false;
+            dragStartIdx = -1;
+            dragRowCells = [];
+            dragRowElement = null;
         });
     });
 
-    // 鼠标移动：高亮延长范围
-    container.addEventListener('mousemove', function(e) {
-        if (!isDragging || !dragStartCell) return;
+    // 全局监听鼠标松开，保证拖动状态同步
+    document.addEventListener('mouseup', function mouseUpHandler(e) {
+        if (isDragging) {
+            isDragging = false;
+            dragStartIdx = -1;
+            dragRowCells = [];
+            dragRowElement = null;
+        }
+        // 只需一次，移除监听
+        document.removeEventListener('mouseup', mouseUpHandler);
+    });
+
+    function getCellState(cell) {
+        if (cell.classList.contains('note-head')) return 'head';
+        if (cell.classList.contains('note-body')) return 'body';
+        if (cell.classList.contains('note-tail')) return 'tail';
+        return 'empty';
+    }
+
+    // 拖动高亮与消去
+    container.addEventListener('mousemove', e => {
+        if (!isDragging || dragStartIdx < 0) return;
         const target = e.target.closest('.piano-cell');
-        if (!target || target.parentElement !== dragStartCell.parentElement) return;
+        if (!target || target.parentElement !== dragRowElement) {
+            // 鼠标移出当前行，立即终止拖动并清除高亮
+            if (dragRowCells.length && dragStartIdx >= 0) {
+                clearNoteSegment(dragRowCells ,dragStartIdx);
+                /*
+                for (let i = dragStartIdx; i < dragRowCells.length; i++) {
+                    dragRowCells[i].classList.remove('note-head', 'note-body','note-tail');
+                }*/
+            }
+            isDragging = false;
+            dragStartIdx = -1;
+            dragRowCells = [];
+            dragRowElement = null;
+            return;
+        }
         const idx = dragRowCells.indexOf(target);
-        if (idx < 0) return;
-        // 清除
-        dragRowCells.forEach(c => c.classList.remove('note-body', 'note-tail', 'dragging'));
-        // 头到当前格全部高亮
+        // 先当前建的body/tail，实时拖拽
+        for (let i = dragStartIdx+1; i < dragRowCells.length; i++) {
+            if(getCellState(dragRowCells[i])=="empty")break;
+            dragRowCells[i].classList.remove('note-body','note-tail');
+        }
         if (idx > dragStartIdx) {
-            for (let i = dragStartIdx + 1; i <= idx; i++) {
+            // 向右拖动：高亮body和tail
+            for (let i = dragStartIdx + 1; i < idx; i++) {
                 dragRowCells[i].classList.add('note-body');
             }
             dragRowCells[idx].classList.add('note-tail');
+        } else {
+            // 向左回退：只保留head，实时消去body/tail
+            // 已在上面清理
         }
-        // 拖动时高亮边框
-        target.classList.add('dragging');
-    });
-
-    // 鼠标松开：确定音符长度
-    container.addEventListener('mouseup', function(e) {
-        if (!isDragging || !dragStartCell) return;
-        isDragging = false;
-        dragRowCells.forEach(c => c.classList.remove('dragging'));
-        dragStartCell = null;
-        dragRowCells = [];
-        dragStartIdx = -1;
-    });
-
-    // 单击cell：新建/取消音符
-    container.querySelectorAll('.piano-cell').forEach(cell => {
-        cell.addEventListener('click', function(e) {
-            if (isDragging) return;
-            // 如果是音符头，点击取消
-            if (this.classList.contains('note-head')) {
-                this.classList.remove('note-head');
-                // 同行后续body和tail也取消
-                let next = this.nextElementSibling;
-                while (next && (next.classList.contains('note-body') || next.classList.contains('note-tail'))) {
-                    next.classList.remove('note-body', 'note-tail');
-                    next = next.nextElementSibling;
-                }
-            } else {
-                // 新建音符
-                this.classList.add('note-head');
-            }
-        });
     });
 }
 
@@ -271,5 +364,12 @@ style.textContent = `
 .piano-roll-table td { border: 1px solid #888; width: 32px; height: 28px; background: #666; }
 .piano-roll-table .pitch-label { background: #333; color: #fff; width: 32px; text-align: center; }
 .piano-roll-table .piano-cell.active { background: #4fc3f7; }
+/* 新增样式：隐藏格子线 */
+.piano-roll-table .no-border {
+    border-left: none;
+}
+.piano-roll-table .note-head.no-border {
+    border-left: 1px solid #888;
+}
 `;
 document.head.appendChild(style);
