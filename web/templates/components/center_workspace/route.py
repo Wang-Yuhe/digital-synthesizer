@@ -51,3 +51,11 @@ def play():
         return jsonify({"status": "success", "message": "Playing current NoteBlock"})
     else:
         return jsonify({"status": "error", "message": "No NoteBlock selected"}), 400
+
+@left_panel_bp.route('/your_route', methods=['POST'])
+def receive_cell():
+    data = request.json
+    pitch = data.get('pitch')
+    bar_idx = data.get('barIdx')
+    # 处理逻辑
+    return jsonify({'status': 'ok'})

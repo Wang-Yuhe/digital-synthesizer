@@ -194,8 +194,104 @@
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
 .close-btn { background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }
 .modal-bpm { margin-bottom: 16px; }
-#piano-roll-container { background: #444; border-radius: 6px; overflow-x: auto; }
-.piano-roll-table { border-collapse: collapse; width: auto; }
-.piano-roll-table td { border: 1px solid #888; width: 70px; height: 28px; background: #666; }
-.piano-roll-table .pitch-label { background: #333; color: #fff; width: 32px; text-align: center; }
-.piano-roll-table .piano-cell.active { background: #4fc3f7; }
+
+/*钢琴卷帘设置*/
+.piano-roll-outer {
+    display: flex;
+    height: 400px;
+    background: #444;
+    position: relative;
+}
+.piano-roll-pitches {
+    width: 48px;
+    min-width: 48px;
+    background: #333;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: sticky;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    overflow: hidden; /* 关键：无滚动条 */
+    height: 100%;
+}
+.piano-roll-pitch-label {
+    height: 28px;           /* 必须与格子高度一致 */
+    line-height: 28px;
+    width: 100%;
+    text-align: center;
+    font-size: 0.95em;
+    border-bottom: 1px solid #555;
+    box-sizing: border-box;
+    user-select: none;
+}
+.piano-roll-pitch-label.black-key {
+    background: #222;
+}
+.piano-roll-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+}
+.piano-roll-timeline {
+    height: 24px;
+    overflow: hidden; /* 关键：无滚动条 */
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #222;
+}
+.piano-roll-scroll {
+    flex: 1;
+    overflow: auto;
+    height: calc(100% - 24px);
+    background: #444;
+    position: relative;
+}
+.piano-roll-timeline-table {
+    border-collapse: collapse;
+    width: auto;
+    table-layout: fixed;
+}
+.piano-roll-timeline-table td {
+    border: 1px solid #333;
+    background: #222;
+    color: #0d6efd;
+    text-align: center;
+    font-size: 0.95em;
+    height: 24px;
+    min-width: 40px;
+    max-width: 40px;
+    user-select: none;
+}
+.piano-roll-table {
+    border-collapse: collapse;
+    width: auto;
+    table-layout: fixed;
+}
+.piano-roll-table td {
+    border: 1px solid #888;
+    width: 40px;
+    height: 28px;
+    background: #666;
+    padding: 0;
+    position: relative;
+}
+.piano-roll-table .piano-cell.active,
+.piano-roll-table .piano-cell.note-body {
+    background: #4fc3f7 !important;
+}
+.piano-roll-table .piano-cell.note-head {
+    background: #2196f3 !important;
+    border-left: 3px solid #1976d2;
+}
+.piano-roll-table .piano-cell.note-tail {
+    border-right: 3px solid #1976d2;
+}
+.piano-roll-table .piano-cell.dragging {
+    outline: 2px dashed #ff9800;
+}

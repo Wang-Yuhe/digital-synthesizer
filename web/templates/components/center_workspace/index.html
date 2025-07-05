@@ -45,19 +45,29 @@
     <!-- 乐段编辑弹窗 -->
 <div id="note-block-modal" class="note-block-modal" style="display:none;">
     <div class="note-block-modal-content">
+        <!--头部-->
         <div class="modal-header">
             <span id="modal-title">乐段编辑</span>
             <button id="close-modal-btn" class="close-btn">&times;</button>
         </div>
+        <!--主体-->
         <div class="modal-body">
             <div class="modal-bpm">
                 <label for="modal-bpm-input">BPM：</label>
                 <input type="number" id="modal-bpm-input" min="40" max="240" value="120" style="width:60px;">
             </div>
-            <div id="piano-roll-container"></div>
+            <div class="piano-roll-outer">
+                <div class="piano-roll-pitches" id="piano-roll-pitches"></div>
+                <div class="piano-roll-scroll">
+                    <div id="piano-roll-timeline"></div>
+                    <div id="piano-roll-container"></div>
+                </div>
+            </div>
         </div>
+        <!--保存-->
         <div class="modal-footer">
             <button id="save-note-block-btn" class="btn btn-success">保存</button>
         </div>
     </div>
+
 </div>
