@@ -76,7 +76,9 @@ def note_edit():
     bar_idx = data.get('barIdx')
     length = data.get('length')
     block_index = data.get('block_index')
+    bpm = data.get('bpm')
     # bar_idx 0开始的
+    print(f"bpm:{bpm} ")
     if state==1:
         print(f"收到音符块: pitch={pitch}, barIdx={bar_idx}, length={length}, blockIndex={block_index}")
     else:

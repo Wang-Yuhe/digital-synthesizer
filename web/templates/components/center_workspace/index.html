@@ -67,8 +67,18 @@
                     <div class="piano-roll-pitches" id="piano-roll-pitches"></div>
                     <div class="piano-roll-container-wrapper" id="piano-roll-scroll">
                         <div class="piano-roll-container" id="piano-roll-container"></div>
+                        <!-- 播放指针 -->
+                        <div id="piano-roll-playhead" class="piano-roll-playhead"></div>
                     </div>
                 </div>
+            </div>
+
+            <!-- 乐段编辑弹窗内的播放控制条 -->
+            <div class="modal-playback-bar">
+                <button id="modal-play-btn" class="modal-play-btn"><i class="fa fa-play"></i> 播放</button>
+                <button id="modal-pause-btn" class="modal-pause-btn"><i class="fa fa-pause"></i> 暂停</button>
+                <button id="modal-stop-btn" class="modal-stop-btn"><i class="fa fa-stop"></i> 停止</button>
+                <span id="modal-playback-status" class="modal-playback-status"></span>
             </div>
         </div>
         <!--保存-->

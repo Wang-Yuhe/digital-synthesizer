@@ -114,11 +114,119 @@ function openNoteBlockEditor(blockIndex) {
     showNoteBlockModal(blockIndex);
 }
 
+// --- 弹窗内播放控制 ---
+let playTimer = null;
+let playCol = 0;
+let isPlaying = false;
+let isPaused = false;
+let totalCols = 0;
+let playBpm = 120;
+let playBlockIndex = null;
+
+function resetPlayhead() {
+    const playhead = document.getElementById('piano-roll-playhead');
+    playhead.style.display = 'none';
+    playhead.style.left = '0px';
+    // 清除高亮
+    document.querySelectorAll('.piano-roll-table td.playing-col').forEach(td => {
+        td.classList.remove('playing-col');
+    });
+    playCol = 0;
+    isPlaying = false;
+    isPaused = false;
+    document.getElementById('modal-playback-status').textContent = '';
+}
+
+function movePlayhead(col) {
+    const cellWidth = 40;
+    const playhead = document.getElementById('piano-roll-playhead');
+    playhead.style.display = 'block';
+    playhead.style.left = (col * cellWidth) + 'px';
+
+    // 高亮当前列
+    document.querySelectorAll('.piano-roll-table tr').forEach(tr => {
+        tr.querySelectorAll('td').forEach((td, idx) => {
+            if (idx === col) {
+                td.classList.add('playing-col');
+            } else {
+                td.classList.remove('playing-col');
+            }
+        });
+    });
+}
+
+function startModalPlayback() {
+    if (isPlaying && !isPaused) return;
+    isPlaying = true;
+    isPaused = false;
+    playBpm = parseInt(document.getElementById('modal-bpm-input').value, 10) || 120;
+    const barCount = parseInt(document.getElementById('bar-count-range').value, 10) || 8;
+    const cellsPerBar = 8;
+    totalCols = barCount * cellsPerBar;
+    playBlockIndex = parseInt(document.getElementById('modal-title').textContent.replace(/\D/g, ''), 10);
+
+    // 计算每格的间隔（16分音符，BPM=120时每格=0.125s）
+    const interval = 60 / playBpm; //1格=1拍
+
+    document.getElementById('modal-playback-status').textContent = '播放中...';
+
+    function step() {
+        if (!isPlaying || isPaused) return;
+        movePlayhead(playCol);
+        playCol++;
+        if (playCol >= totalCols) {
+            stopModalPlayback();
+            return;
+        }
+        playTimer = setTimeout(step, interval * 1000);
+    }
+    step();
+}
+
+function pauseModalPlayback() {
+    isPaused = true;
+    document.getElementById('modal-playback-status').textContent = '已暂停';
+    if (playTimer) clearTimeout(playTimer);
+}
+
+function stopModalPlayback() {
+    if (playTimer) clearTimeout(playTimer);
+    resetPlayhead();
+}
+
+// 绑定弹窗内按钮事件
+document.getElementById('modal-play-btn').onclick = function() {
+    if (!isPlaying || isPaused) startModalPlayback();
+};
+document.getElementById('modal-pause-btn').onclick = function() {
+    if (isPlaying && !isPaused) pauseModalPlayback();
+};
+document.getElementById('modal-stop-btn').onclick = function() {
+    stopModalPlayback();
+};
+
+// 获取输入框元素
+const bpmInput = document.getElementById('modal-bpm-input');
+
+// 添加事件监听器，当用户输入时触发
+bpmInput.addEventListener('input', function () {
+    const newBpm = parseInt(this.value, 10);
+    if (!isNaN(newBpm)) {
+        playBpm = newBpm;
+        console.log('BPM 修改为:', playBpm);
+    }
+});
+
+// 弹窗关闭时自动复位
+document.getElementById('close-modal-btn').addEventListener('click', stopModalPlayback);
+
 /**
  * 显示乐段编辑弹窗，并渲染卷帘格子
  * @param {number} blockIndex 乐段编号
  */
 function showNoteBlockModal(blockIndex) {
+    resetPlayhead();
+
     const modal = document.getElementById('note-block-modal');
     modal.style.display = 'flex';
     document.getElementById('modal-title').textContent = `乐段 ${blockIndex} 编辑`;
@@ -127,10 +235,10 @@ function showNoteBlockModal(blockIndex) {
     const barCount = parseInt(document.getElementById('bar-count-range').value, 10) || 8;
     // 获取当前BPM（可根据实际情况获取，这里默认120）
     //const bpm = 120;
-    //document.getElementById('modal-bpm-input').value = bpm;
-
+    //playBpm = parseInt(document.getElementById('modal-bpm-input').value, 10) || 120;
     // 渲染卷帘格子
     renderPianoRoll({ bar_count: barCount , block_index: blockIndex});
+
 }
 
 // 关闭弹窗
@@ -246,6 +354,7 @@ function renderPianoRoll(data) {
                         length: clear_len,
                         state: 0,
                         block_index: data.block_index,
+                        bpm: playBpm,
                     })
                 });
             }
@@ -284,6 +393,7 @@ function renderPianoRoll(data) {
                         length: length,
                         state: 1, // state=1表示新增/调整
                         block_index: data.block_index,
+                        bpm: playBpm,
                     })
                 })
                 .then(res => {

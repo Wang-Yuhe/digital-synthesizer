@@ -441,3 +441,60 @@
 .piano-roll-table .note-body {
     border-radius: 0;
 }
+
+/* 弹窗内播放控制条 */
+.modal-playback-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+    background: #181818;
+    border-radius: 8px;
+    padding: 8px 16px;
+    box-shadow: 0 2px 8px #000a;
+}
+.modal-play-btn, .modal-pause-btn, .modal-stop-btn {
+    background: #222;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 18px;
+    font-size: 16px;
+    margin-right: 4px;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 4px #0006;
+    cursor: pointer;
+}
+.modal-play-btn:hover { background: #1db954; color: #fff; }
+.modal-pause-btn:hover { background: #f1c40f; color: #222; }
+.modal-stop-btn:hover { background: #e74c3c; color: #fff; }
+.modal-playback-status {
+    color: #1db954;
+    font-weight: bold;
+    margin-left: 12px;
+    font-size: 15px;
+}
+
+/* 播放指针 */
+.piano-roll-playhead {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #1db954 60%, #fff 100%);
+    box-shadow: 0 0 8px #1db954cc, 0 0 2px #fff;
+    border-radius: 2px;
+    z-index: 10;
+    pointer-events: none;
+    display: none;
+    transition: left 0.08s cubic-bezier(.4,2,.6,1);
+}
+.piano-roll-table td.playing-col {
+    background: #222 !important;
+    box-shadow: 0 0 8px #1db95499;
+    border-color: #1db954;
+}
+.piano-roll-container-wrapper {
+    position: relative;
+}
