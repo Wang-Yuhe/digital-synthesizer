@@ -1,5 +1,9 @@
 from flask import Flask, render_template, request, jsonify, g
 from src.note_block import NoteBlock
+from src.track import Track
+from src.digital_synthesizer import DigitalSynthesizer
+from src.note import Note
+from web.save import note_saver, track_saver
 import sounddevice as sd
 
 app = Flask(__name__)
@@ -12,6 +16,7 @@ audio_samples = {
 
 note_blocks = []  # NoteBlock 列表
 current_nb = None  # 当前播放的 NoteBlock
+digital_synthesizer = DigitalSynthesizer()  # 数字合成器实例
 
 @app.route('/')
 
@@ -34,19 +39,15 @@ def get_note_blocks():
 
 @app.route('/add_track', methods=['POST'])
 def add_track():
-    nb = NoteBlock(timbre="piano",
-                   note_names=["C4", "E4"],
-                   beat_times=[1, 2],
-                   volume=[0.8, 0.6],
-                   start_beat=[0, 1])
+    nb = track_saver(timbre="piano", track_id=len(note_blocks))
 
     note_blocks.append(nb)
     global current_nb,current_nb_id
     current_nb = nb
-    length = nb.generate_waveform()
+    #length = nb.generate_waveform()
     # 返回所有乐段索引，用于前端刷新显示
     note_blocks_info = [{"index": i+1} for i in range(len(note_blocks))]
-    return jsonify({"length": length.tolist(), "note_blocks": note_blocks_info})
+    return jsonify({"note_blocks": note_blocks_info})
 
 @app.route('/set_current_nb', methods=['POST'])
 def set_current_nb():
@@ -78,8 +79,12 @@ def note_edit():
     block_index = data.get('block_index')
     bpm = data.get('bpm')
     # bar_idx 0开始的
-    print(f"bpm:{bpm} ")
+    #print(f"bpm:{bpm} ")
     if state==1:
+        # bug:连续点击会导致崩溃
+        now_note=Note(note_name=pitch, beat_time=1, bpm=bpm)
+        now_note.generate_waveform()
+        now_note.play_for_preview()
         print(f"收到音符块: pitch={pitch}, barIdx={bar_idx}, length={length}, blockIndex={block_index}")
     else:
         print(f"删除音符块: pitch={pitch}, barIdx={bar_idx}, length={length}, blockIndex={block_index}")  

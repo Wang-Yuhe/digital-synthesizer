@@ -1,6 +1,7 @@
 """音符类"""
 import numpy as np
 import matplotlib.pyplot as plt
+import sounddevice as sd
 
 from src.timbre.piano import piano
 from src.timbre.violin import violin
@@ -150,6 +151,11 @@ class Note:
         else:
             raise ValueError(f"Unknown timbre: {self.timbre}")
         return self.waveform
+    
+    def play_for_preview(self) -> None:
+        """播放音频"""
+        sd.play(self.waveform, samplerate=self.sample_rate)
+        sd.wait()
 
     def show_time_and_freq_domain(self):
         """
