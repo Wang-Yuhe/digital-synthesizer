@@ -1,22 +1,23 @@
 
 class note_saver:
-    def __init__(self, note_name: str, track_id:int, bar_idx:int, block_idx:int) -> None:
+    def __init__(self, note_name: str, length:int, bar_idx:int, volume = 1) -> None:
         self.note_name=note_name
-        self.track_id=track_id
+        self.length=length
         self.bar_idx=bar_idx
-        self.block_idx=block_idx
+        self.volume=volume
     def get_information(self) -> tuple:
         """
         获取音符信息 
 
         return:
-            tuple: (note_name, track_id, bar_idx, block_idx)
+            tuple: (note_name, length, bar_idx, volume)
         """
-        return (self.note_name, self.track_id, self.bar_idx, self.block_idx)
-    
+        return (self.note_name, self.length, self.bar_idx, self.volume)
+
 class track_saver:
-    def __init__(self, timbre: str, track_id:int) -> None:
+    def __init__(self,  track_id:int, timbre = "piano", bpm = 120) -> None:
         self.timbre=timbre
+        self.bpm=bpm
         self.track_id=track_id
         self.note_savers = []  # 存储音符信息的列表
 
@@ -30,7 +31,7 @@ class track_saver:
         获取音符信息
 
         return:
-            list: [(note_name, track_id, bar_idx, block_idx), ...]
+            list: [(note_name, length, bar_idx, volume), ...]
         """
         note_information = []
         for note_saver in self.note_savers:

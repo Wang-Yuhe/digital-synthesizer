@@ -155,6 +155,58 @@ function movePlayhead(col) {
     });
 }
 
+function saveNoteBlock() {
+    // 获取block_index
+    const blockIndex = parseInt(document.getElementById('modal-title').textContent.replace(/\D/g, ''), 10);
+    // 获取所有行
+    const container = document.getElementById('piano-roll-container');
+    const rows = Array.from(container.querySelectorAll('tr'));
+    const noteList = [];
+    rows.forEach(row => {
+        const cells = Array.from(row.querySelectorAll('.piano-cell'));
+        let c = 0;
+        while (c < cells.length) {
+            if (cells[c].classList.contains('note-head')) {
+                // 找到音符起始
+                const pitch = cells[c].getAttribute('data-pitch');
+                let length = 1;
+                let end = c + 1;
+                while (end < cells.length && (cells[end].classList.contains('note-body') || cells[end].classList.contains('note-tail'))) {
+                    length++;
+                    if (cells[end].classList.contains('note-tail')) break;
+                    end++;
+                }
+                noteList.push({
+                    pitch: pitch,
+                    barIdx: c,
+                    length: length,
+                    block_index: blockIndex,
+                    bpm: playBpm
+                });
+                c = end + 1;
+            } else {
+                c++;
+            }
+        }
+    });
+    // 发送到后端
+    fetch('/save_note_block', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes: noteList })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert('保存成功！');
+        // 可选：关闭弹窗、刷新乐段等
+        //document.getElementById('note-block-modal').style.display = 'none';
+    })
+    .catch(err => {
+        alert('保存失败！');
+        console.error(err);
+    });
+};
+
 function startModalPlayback() {
     if (isPlaying && !isPaused) return;
     isPlaying = true;
@@ -165,6 +217,7 @@ function startModalPlayback() {
     totalCols = barCount * cellsPerBar;
     playBlockIndex = parseInt(document.getElementById('modal-title').textContent.replace(/\D/g, ''), 10);
 
+    saveNoteBlock();
     // 计算每格的间隔（16分音符，BPM=120时每格=0.125s）
     const interval = 60 / playBpm; //1格=1拍
 
@@ -224,7 +277,7 @@ document.getElementById('close-modal-btn').addEventListener('click', stopModalPl
  * 显示乐段编辑弹窗，并渲染卷帘格子
  * @param {number} blockIndex 乐段编号
  */
-function showNoteBlockModal(blockIndex) {
+async function showNoteBlockModal(blockIndex) {
     resetPlayhead();
 
     const modal = document.getElementById('note-block-modal');
@@ -233,18 +286,38 @@ function showNoteBlockModal(blockIndex) {
 
     // 获取当前小节数（从主页面滑块获取）
     const barCount = parseInt(document.getElementById('bar-count-range').value, 10) || 8;
-    // 获取当前BPM（可根据实际情况获取，这里默认120）
-    //const bpm = 120;
-    //playBpm = parseInt(document.getElementById('modal-bpm-input').value, 10) || 120;
-    // 渲染卷帘格子
-    renderPianoRoll({ bar_count: barCount , block_index: blockIndex});
+    
+    // 新增：从后端获取已保存的音符数据
+    try {
+        const response = await fetch(`/get_note_block_details?block_index=${blockIndex}`);
+        const data = await response.json();
+        if (data.status !== 'success') throw new Error(data.message);
 
+        // 渲染卷帘格子，并传递保存的音符数据和BPM
+        renderPianoRoll({ 
+            bar_count: barCount, 
+            block_index: blockIndex,
+            saved_notes: data.notes,  // 保存的音符列表
+            saved_bpm: data.bpm       // 保存的BPM
+        });
+
+        // 同步BPM输入框的值
+        //document.getElementById('modal-bpm-input').value = data.bpm;
+        //playBpm = data.bpm;
+
+    } catch (error) {
+        alert(`加载乐段数据失败：${error.message}`);
+        modal.style.display = 'none';
+    }
 }
 
 // 关闭弹窗
 document.getElementById('close-modal-btn').onclick = () => {
     document.getElementById('note-block-modal').style.display = 'none';
 };
+
+// 保存按钮事件
+document.getElementById('save-note-block-btn').onclick = saveNoteBlock;
 
 /**
  * 渲染钢琴卷帘格子
@@ -296,6 +369,36 @@ function renderPianoRoll(data) {
     }
     gridHtml += '</tbody></table>';
     container.innerHTML = gridHtml;
+
+    // 根据保存的音符数据恢复样式
+    const savedNotes = data.saved_notes || [];
+    savedNotes.forEach(note => {
+        const { pitch, barIdx: start, length } = note;
+        const end = start + length - 1;  // 计算结束位置（长度包含起始和结束）
+
+        // 找到对应音高的行（pitches数组中的索引）
+        const rowIndex = pitches.indexOf(pitch);
+        if (rowIndex === -1) return;  // 无效音高，跳过
+
+        // 获取该行的所有单元格
+        const row = container.querySelectorAll('tr')[rowIndex];
+        const cells = Array.from(row.querySelectorAll('.piano-cell'));
+
+        // 设置note-head（起始位置）
+        cells[start].classList.add('note-head');
+
+        // 设置note-body（中间位置，长度>1时生效）
+        if (length > 1) {
+            for (let i = start + 1; i < end; i++) {
+                cells[i].classList.add('note-body');
+            }
+        }
+
+        // 设置note-tail（结束位置，长度>1时生效）
+        if (length > 1) {
+            cells[end].classList.add('note-tail');
+        }
+    });
 
     // 滚动同步
     const wrapper = document.getElementById('piano-roll-scroll');
@@ -467,7 +570,6 @@ function renderPianoRoll(data) {
         }
     });
 }
-
 
 // --------- 样式动态注入（如已在全局CSS中可省略） ---------
 const style = document.createElement('style');

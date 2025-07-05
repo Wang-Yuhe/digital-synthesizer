@@ -91,5 +91,61 @@ def note_edit():
     
     return jsonify({"status": "success", "message": "Note block received", "data": data})
 
+@app.route('/save_note_block', methods=['POST'])
+def save_note_block():
+    data = request.get_json()
+    notes = data.get('notes', [])
+    # 这里可以保存到数据库、文件，或更新内存结构
+    """
+    print(f"收到批量音符，共{len(notes)}条")
+    for note in notes:
+        print(note)
+    """
+    # TODO: 实际保存逻辑
+    if notes:
+        block_index = notes[0].get('block_index')
+        print(block_index)
+        now_track = track_saver(
+            #timbre=notes[0].get('timbre', 'piano'),#到时候可选的
+            bpm=notes[0].get('bpm'),
+            track_id=block_index,
+        )
+        for note in notes:
+            now_note=note_saver(
+                note_name=note.get('pitch'),
+                length=note.get('length'),
+                bar_idx=note.get('barIdx'),
+            )
+            now_track.add_note(now_note)
+        note_blocks[block_index-1] = now_track  # 更新对应的 NoteBlock
+
+        for i in note_blocks:
+            print(f"乐段 {i.track_id} 的音符信息: {i.get_note_information()}")
+
+    return jsonify({"status": "success", "message": f"已保存{len(notes)}个音符"})
+
+@app.route('/get_note_block_details', methods=['GET'])
+def get_note_block_details():
+    block_index = request.args.get('block_index', type=int)
+    if block_index is None or block_index < 1 or block_index > len(note_blocks):
+        return jsonify({"status": "error", "message": "无效的乐段编号"}), 400
+    
+    # 从 note_blocks 中获取对应乐段的音符数据
+    track = note_blocks[block_index - 1]
+    notes = []
+    for note_saver in track.note_savers:
+        note_info = note_saver.get_information()
+        notes.append({
+            "pitch": note_info[0],       # 音高（如 "C4"）
+            "barIdx": note_info[2],      # 起始小节位置（barIdx）
+            "length": note_info[1]       # 音符长度（占用的格子数）
+        })
+    
+    return jsonify({
+        "status": "success",
+        "notes": notes,
+        "bpm": track.bpm                # 同步保存的BPM
+    })
+
 if __name__ == '__main__':
     app.run(debug=True)
