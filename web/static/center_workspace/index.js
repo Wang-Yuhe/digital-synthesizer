@@ -392,7 +392,9 @@ function renderPianoRoll(data) {
     const pitchesDiv = document.getElementById('piano-roll-pitches');
     let pitchTable = '<table class="piano-roll-pitch-table"><tbody>';
     for (let i = 0; i < pitches.length; i++) {
-      pitchTable += `<tr><td>${pitches[i]}</td></tr>`;
+        const isBlackKey = pitches[i].includes('#');  // 判断是否为黑键（含#）
+        // 为黑键行添加 black-key 类
+        pitchTable += `<tr class="${isBlackKey ? 'black-key' : ''}"><td>${pitches[i]}</td></tr>`;
     }
     pitchTable += '</tbody></table>';
     pitchesDiv.innerHTML = pitchTable;
@@ -412,7 +414,9 @@ function renderPianoRoll(data) {
     const container = document.getElementById('piano-roll-container');
     let gridHtml = `<table class="piano-roll-table" style="min-width:${totalCells * cellWidth}px;"><tbody>`;
     for (let r = 0; r < pitches.length; r++) {
-        gridHtml += '<tr>';
+        const isBlackKey = pitches[r].includes('#');  // 判断是否为黑键
+        // 为黑键对应的格子行添加 black-key-row 类
+        gridHtml += `<tr class="${isBlackKey ? 'black-key-row' : ''}">`;
         for (let c = 0; c < totalCells; c++) {
             gridHtml += `<td class="piano-cell" data-pitch="${pitches[r]}" data-bar="${c}"></td>`;
         }
@@ -622,6 +626,7 @@ function renderPianoRoll(data) {
     });
 
     enableTimelinePlayhead(totalCells, cellWidth);
+
 }
 
 function enableTimelinePlayhead(totalCols, cellWidth) {
@@ -630,6 +635,7 @@ function enableTimelinePlayhead(totalCols, cellWidth) {
     let lastCol = -1;
 
     // 鼠标移动时显示高亮和指针
+    /*
     timelineDiv.onmousemove = function(e) {
         const rect = timelineDiv.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -651,15 +657,16 @@ function enableTimelinePlayhead(totalCols, cellWidth) {
         });
 
         lastCol = col;
-    };
+    };*/
 
     // 鼠标离开时隐藏指针和高亮
+    /*
     timelineDiv.onmouseleave = function() {
         playhead.style.display = 'none';
         document.querySelectorAll('.piano-roll-table td.playing-col').forEach(td => {
             td.classList.remove('playing-col');
         });
-    };
+    };*/
 
     // 鼠标点击时间轴，跳转播放指针
     timelineDiv.onclick = function(e) {
