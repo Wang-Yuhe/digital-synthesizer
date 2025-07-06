@@ -281,6 +281,20 @@ function pauseModalPlayback() {
 
 function stopModalPlayback() {
     if (playTimer) clearTimeout(playTimer);
+    // 发送停止请求
+    fetch('/stop_playback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status !== 'success') {
+            alert(`停止失败：${data.message}`);
+        }
+    })
+    .catch(err => {
+        console.error('停止请求失败:', err);
+    });
     resetPlayhead();
 }
 
@@ -606,6 +620,58 @@ function renderPianoRoll(data) {
             // 已在上面清理
         }
     });
+
+    enableTimelinePlayhead(totalCells, cellWidth);
+}
+
+function enableTimelinePlayhead(totalCols, cellWidth) {
+    const timelineDiv = document.getElementById('piano-roll-timeline');
+    const playhead = document.getElementById('piano-roll-playhead');
+    let lastCol = -1;
+
+    // 鼠标移动时显示高亮和指针
+    timelineDiv.onmousemove = function(e) {
+        const rect = timelineDiv.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const col = Math.floor(x / cellWidth);
+        if (col < 0 || col >= totalCols) return;
+
+        playhead.style.display = 'block';
+        playhead.style.left = (col * cellWidth) + 'px';
+
+        // 高亮当前列
+        document.querySelectorAll('.piano-roll-table tr').forEach(tr => {
+            tr.querySelectorAll('td').forEach((td, idx) => {
+                if (idx === col) {
+                    td.classList.add('playing-col');
+                } else {
+                    td.classList.remove('playing-col');
+                }
+            });
+        });
+
+        lastCol = col;
+    };
+
+    // 鼠标离开时隐藏指针和高亮
+    timelineDiv.onmouseleave = function() {
+        playhead.style.display = 'none';
+        document.querySelectorAll('.piano-roll-table td.playing-col').forEach(td => {
+            td.classList.remove('playing-col');
+        });
+    };
+
+    // 鼠标点击时间轴，跳转播放指针
+    timelineDiv.onclick = function(e) {
+        const rect = timelineDiv.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const col = Math.floor(x / cellWidth);
+        if (col < 0 || col >= totalCols) return;
+
+        // 更新全局playCol并刷新主播放指针和高亮列
+        playCol = col;
+        movePlayhead(col);
+    };
 }
 
 // --------- 样式动态注入（如已在全局CSS中可省略） ---------

@@ -4,6 +4,7 @@ from src.track import Track
 from src.digital_synthesizer import DigitalSynthesizer
 from src.note import Note
 from web.save import note_saver, track_saver
+from web.play import play_numpy_waveform,stop_waveform_playback
 import sounddevice as sd
 
 app = Flask(__name__)
@@ -84,7 +85,7 @@ def note_edit():
         # bug:连续点击会导致崩溃
         now_note=Note(note_name=pitch, beat_time=1, bpm=bpm)
         now_note.generate_waveform()
-        now_note.play_for_preview()
+        play_numpy_waveform(now_note.waveform)
         print(f"收到音符块: pitch={pitch}, barIdx={bar_idx}, length={length}, blockIndex={block_index}")
     else:
         print(f"删除音符块: pitch={pitch}, barIdx={bar_idx}, length={length}, blockIndex={block_index}")  
@@ -117,7 +118,10 @@ def save_note_block():
                 bar_idx=note.get('barIdx'),
             )
             now_track.add_note(now_note)
-        note_blocks[block_index-1] = now_track  # 更新对应的 NoteBlock
+        if block_index<=len(note_blocks):
+            note_blocks[block_index-1] = now_track  # 更新对应的 NoteBlock
+        else:
+            return jsonify({"status": "error", "message": "保存失败"}), 400
 
         for i in note_blocks:
             print(f"乐段 {i.track_id} 的音符信息: {i.get_note_information()}")
@@ -147,7 +151,6 @@ def get_note_block_details():
         "bpm": track.bpm                # 同步保存的BPM
     })
 
-current_playback = None
 
 @app.route('/start_playback', methods=['POST'])
 def start_playback():
@@ -173,7 +176,8 @@ def start_playback():
         if i.bar_idx<start_col:continue
         note_name.append(i.note_name)
         beat_times.append(i.length)
-        start_beat.append(i.bar_idx)
+        #print(i.bar_idx,start_col)
+        start_beat.append(i.bar_idx-start_col)
         volume.append(i.volume)
 
     #print(current_nb.bpm)
@@ -184,21 +188,42 @@ def start_playback():
     # 生成从start_col开始的音频数据（需根据业务逻辑实现）
     waveform = newblock.generate_waveform()
 
+    """
     # 停止之前的播放（如果有）
     if current_playback is not None:
         current_playback.stop()
 
     # 开始新的播放
-    current_playback = sd.play(waveform, samplerate=newblock.sample_rate)
+    current_playback = sd.OutputStream(samplerate=newblock.sample_rate, channels=1)
+    current_playback.start()
+    waveform = waveform.astype('float32')
+    current_playback.write(waveform)
+    #current_playback = sd.play(waveform, samplerate=newblock.sample_rate)
+    """
+    play_numpy_waveform(waveform)
     return jsonify({"status": "success", "message": "开始播放"})
 
 @app.route('/pause_playback', methods=['POST'])
 def pause_playback():
+    """
     global current_playback
     if current_playback is not None:
         current_playback.stop()  # 停止当前播放
         current_playback = None
+    """
+    stop_waveform_playback()
     return jsonify({"status": "success", "message": "已暂停播放"})
+
+@app.route('/stop_playback', methods=['POST'])
+def stop_playback():
+    """
+    global current_playback
+    if current_playback is not None:
+        current_playback.stop()  # 停止当前播放
+        current_playback = None
+    """
+    stop_waveform_playback()
+    return jsonify({"status": "success", "message": "已停止播放"})
 
 if __name__ == '__main__':
     app.run(debug=True)

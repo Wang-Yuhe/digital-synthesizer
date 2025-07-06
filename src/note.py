@@ -154,6 +154,7 @@ class Note:
     
     def play_for_preview(self) -> None:
         """播放音频"""
+        sd.stop()  # 强制停止任何正在播放的音频
         sd.play(self.waveform, samplerate=self.sample_rate)
         sd.wait()
 
